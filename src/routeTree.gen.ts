@@ -9,38 +9,201 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReglesRouteImport } from './routes/regles'
+import { Route as PodiumRouteImport } from './routes/podium'
+import { Route as InscriptionRouteImport } from './routes/inscription'
+import { Route as ConnexionRouteImport } from './routes/connexion'
+import { Route as ClassementsRouteImport } from './routes/classements'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PronosticsPreTournoiRouteImport } from './routes/pronostics.pre-tournoi'
+import { Route as PronosticsGroupesRouteImport } from './routes/pronostics.groupes'
+import { Route as PronosticsEliminatoiresRouteImport } from './routes/pronostics.eliminatoires'
 
+const ReglesRoute = ReglesRouteImport.update({
+  id: '/regles',
+  path: '/regles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodiumRoute = PodiumRouteImport.update({
+  id: '/podium',
+  path: '/podium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InscriptionRoute = InscriptionRouteImport.update({
+  id: '/inscription',
+  path: '/inscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnexionRoute = ConnexionRouteImport.update({
+  id: '/connexion',
+  path: '/connexion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassementsRoute = ClassementsRouteImport.update({
+  id: '/classements',
+  path: '/classements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PronosticsPreTournoiRoute = PronosticsPreTournoiRouteImport.update({
+  id: '/pronostics/pre-tournoi',
+  path: '/pronostics/pre-tournoi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronosticsGroupesRoute = PronosticsGroupesRouteImport.update({
+  id: '/pronostics/groupes',
+  path: '/pronostics/groupes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronosticsEliminatoiresRoute = PronosticsEliminatoiresRouteImport.update({
+  id: '/pronostics/eliminatoires',
+  path: '/pronostics/eliminatoires',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/classements': typeof ClassementsRoute
+  '/connexion': typeof ConnexionRoute
+  '/inscription': typeof InscriptionRoute
+  '/podium': typeof PodiumRoute
+  '/regles': typeof ReglesRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/classements': typeof ClassementsRoute
+  '/connexion': typeof ConnexionRoute
+  '/inscription': typeof InscriptionRoute
+  '/podium': typeof PodiumRoute
+  '/regles': typeof ReglesRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/classements': typeof ClassementsRoute
+  '/connexion': typeof ConnexionRoute
+  '/inscription': typeof InscriptionRoute
+  '/podium': typeof PodiumRoute
+  '/regles': typeof ReglesRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/classements'
+    | '/connexion'
+    | '/inscription'
+    | '/podium'
+    | '/regles'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/classements'
+    | '/connexion'
+    | '/inscription'
+    | '/podium'
+    | '/regles'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/classements'
+    | '/connexion'
+    | '/inscription'
+    | '/podium'
+    | '/regles'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ClassementsRoute: typeof ClassementsRoute
+  ConnexionRoute: typeof ConnexionRoute
+  InscriptionRoute: typeof InscriptionRoute
+  PodiumRoute: typeof PodiumRoute
+  ReglesRoute: typeof ReglesRoute
+  PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
+  PronosticsGroupesRoute: typeof PronosticsGroupesRoute
+  PronosticsPreTournoiRoute: typeof PronosticsPreTournoiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/regles': {
+      id: '/regles'
+      path: '/regles'
+      fullPath: '/regles'
+      preLoaderRoute: typeof ReglesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podium': {
+      id: '/podium'
+      path: '/podium'
+      fullPath: '/podium'
+      preLoaderRoute: typeof PodiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inscription': {
+      id: '/inscription'
+      path: '/inscription'
+      fullPath: '/inscription'
+      preLoaderRoute: typeof InscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connexion': {
+      id: '/connexion'
+      path: '/connexion'
+      fullPath: '/connexion'
+      preLoaderRoute: typeof ConnexionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/classements': {
+      id: '/classements'
+      path: '/classements'
+      fullPath: '/classements'
+      preLoaderRoute: typeof ClassementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +211,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pronostics/pre-tournoi': {
+      id: '/pronostics/pre-tournoi'
+      path: '/pronostics/pre-tournoi'
+      fullPath: '/pronostics/pre-tournoi'
+      preLoaderRoute: typeof PronosticsPreTournoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronostics/groupes': {
+      id: '/pronostics/groupes'
+      path: '/pronostics/groupes'
+      fullPath: '/pronostics/groupes'
+      preLoaderRoute: typeof PronosticsGroupesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronostics/eliminatoires': {
+      id: '/pronostics/eliminatoires'
+      path: '/pronostics/eliminatoires'
+      fullPath: '/pronostics/eliminatoires'
+      preLoaderRoute: typeof PronosticsEliminatoiresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ClassementsRoute: ClassementsRoute,
+  ConnexionRoute: ConnexionRoute,
+  InscriptionRoute: InscriptionRoute,
+  PodiumRoute: PodiumRoute,
+  ReglesRoute: ReglesRoute,
+  PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
+  PronosticsGroupesRoute: PronosticsGroupesRoute,
+  PronosticsPreTournoiRoute: PronosticsPreTournoiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

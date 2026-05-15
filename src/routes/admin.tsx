@@ -1,0 +1,169 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { GROUP_LETTERS, TEAMS_BY_GROUP, STAGE_LABELS, ALL_TEAMS } from "@/lib/teams";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+
+export const Route = createFileRoute("/admin")({ component: Page });
+
+type Match = {
+  id: string; stage: string; group_letter: string | null; match_number: number | null;
+  home_team: string; away_team: string; kickoff_at: string;
+  real_home_score: number | null; real_away_score: number | null;
+};
+
+const STAGES = ["GROUP", "R32", "R16", "QF", "SF", "THIRD", "FINAL"] as const;
+
+function Page() {
+  const { profile, loading } = useAuth();
+  const [stage, setStage] = useState<string>("GROUP");
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [groupRes, setGroupRes] = useState<Record<string, { qualified_1: string; qualified_2: string }>>({});
+  const [settings, setSettings] = useState<{ real_winner: string; real_top_scorer: string }>({ real_winner: "", real_top_scorer: "" });
+
+  const reload = async () => {
+    const { data: ms } = await supabase.from("matches").select("*").order("kickoff_at");
+    setMatches((ms as Match[]) ?? []);
+    const { data: gr } = await supabase.from("group_results").select("*");
+    const map: any = {};
+    GROUP_LETTERS.forEach((g) => map[g] = { qualified_1: "", qualified_2: "" });
+    (gr ?? []).forEach((r: any) => map[r.group_letter] = { qualified_1: r.qualified_1 ?? "", qualified_2: r.qualified_2 ?? "" });
+    setGroupRes(map);
+    const { data: ts } = await supabase.from("tournament_settings").select("*").eq("id", 1).maybeSingle();
+    if (ts) setSettings({ real_winner: (ts as any).real_winner ?? "", real_top_scorer: (ts as any).real_top_scorer ?? "" });
+  };
+
+  useEffect(() => { reload(); }, []);
+
+  const filtered = useMemo(() => matches.filter((m) => m.stage === stage), [matches, stage]);
+
+  if (loading) return <p className="text-muted-foreground">…</p>;
+  if (!profile?.is_admin) return (
+    <div className="rounded-xl border border-destructive/40 bg-card p-6 text-center">
+      <h1 className="font-display text-3xl">Accès refusé</h1>
+      <p className="text-muted-foreground">Cette page est réservée aux admins.</p>
+    </div>
+  );
+
+  return (
+    <section>
+      <h1 className="font-display text-4xl text-gold">Admin</h1>
+
+      <h2 className="mt-6 font-display text-2xl">Matchs</h2>
+      <div className="mt-2 flex flex-wrap gap-1">
+        {STAGES.map((s) => (
+          <button key={s} onClick={() => setStage(s)}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium ${stage === s ? "bg-gold" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
+            {STAGE_LABELS[s]}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 space-y-2">
+        {filtered.map((m) => <AdminMatchRow key={m.id} match={m} onSaved={reload} editTeams={m.stage !== "GROUP"} />)}
+      </div>
+
+      <h2 className="mt-10 font-display text-2xl">Qualifiés réels par groupe</h2>
+      <div className="mt-2 grid gap-3 sm:grid-cols-2">
+        {GROUP_LETTERS.map((g) => (
+          <div key={g} className="rounded-xl border border-border bg-card p-4">
+            <h3 className="font-display text-xl text-gold">Groupe {g}</h3>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([1, 2] as const).map((n) => (
+                <select key={n} value={(groupRes[g] as any)?.[`qualified_${n}`] ?? ""}
+                  onChange={async (e) => {
+                    const v = e.target.value;
+                    const next = { ...groupRes[g], [`qualified_${n}`]: v } as any;
+                    setGroupRes({ ...groupRes, [g]: next });
+                    await supabase.from("group_results").upsert({
+                      group_letter: g,
+                      qualified_1: next.qualified_1 || null,
+                      qualified_2: next.qualified_2 || null,
+                    }, { onConflict: "group_letter" });
+                    toast.success("Sauvegardé");
+                  }}
+                  className="rounded-md border border-border bg-input px-2 py-2 text-sm outline-none focus:border-primary">
+                  <option value="">{n === 1 ? "1er" : "2e"}</option>
+                  {TEAMS_BY_GROUP[g].map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="mt-10 font-display text-2xl">Vainqueur & meilleur buteur</h2>
+      <div className="mt-2 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <label className="text-xs uppercase text-muted-foreground">Vainqueur</label>
+          <select value={settings.real_winner}
+            onChange={async (e) => {
+              const v = e.target.value;
+              setSettings({ ...settings, real_winner: v });
+              await supabase.from("tournament_settings").update({ real_winner: v || null, updated_at: new Date().toISOString() }).eq("id", 1);
+              toast.success("Sauvegardé");
+            }}
+            className="mt-1 w-full rounded-md border border-border bg-input px-2 py-2 outline-none focus:border-primary">
+            <option value="">—</option>
+            {ALL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <label className="text-xs uppercase text-muted-foreground">Meilleur buteur</label>
+          <input value={settings.real_top_scorer}
+            onChange={(e) => setSettings({ ...settings, real_top_scorer: e.target.value })}
+            onBlur={async () => {
+              await supabase.from("tournament_settings").update({ real_top_scorer: settings.real_top_scorer || null, updated_at: new Date().toISOString() }).eq("id", 1);
+              toast.success("Sauvegardé");
+            }}
+            className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2 outline-none focus:border-primary"
+            placeholder="Ex: Mbappé" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: () => void; editTeams: boolean }) {
+  const [home, setHome] = useState(match.home_team);
+  const [away, setAway] = useState(match.away_team);
+  const [hs, setHs] = useState<number | "">(match.real_home_score ?? "");
+  const [as_, setAs] = useState<number | "">(match.real_away_score ?? "");
+
+  useEffect(() => {
+    setHome(match.home_team); setAway(match.away_team);
+    setHs(match.real_home_score ?? ""); setAs(match.real_away_score ?? "");
+  }, [match.id, match.home_team, match.away_team, match.real_home_score, match.real_away_score]);
+
+  const save = async () => {
+    const { error } = await supabase.from("matches").update({
+      home_team: home,
+      away_team: away,
+      real_home_score: hs === "" ? null : Number(hs),
+      real_away_score: as_ === "" ? null : Number(as_),
+    }).eq("id", match.id);
+    if (error) toast.error(error.message);
+    else { toast.success("Match mis à jour"); onSaved(); }
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-3">
+      <div className="text-xs text-muted-foreground">{match.id} · {format(new Date(match.kickoff_at), "d MMM HH:mm", { locale: fr })}</div>
+      <div className="mt-2 grid grid-cols-[1fr_auto_auto_auto_1fr_auto] items-center gap-2">
+        {editTeams ? (
+          <input value={home} onChange={(e) => setHome(e.target.value)} className="rounded-md border border-border bg-input px-2 py-1 text-sm" />
+        ) : <div className="font-semibold">{match.home_team}</div>}
+        <input type="number" min={0} value={hs} onChange={(e) => setHs(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
+        <span>:</span>
+        <input type="number" min={0} value={as_} onChange={(e) => setAs(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
+        {editTeams ? (
+          <input value={away} onChange={(e) => setAway(e.target.value)} className="rounded-md border border-border bg-input px-2 py-1 text-sm" />
+        ) : <div className="font-semibold">{match.away_team}</div>}
+        <button onClick={save} className="rounded-md bg-gold px-3 py-1.5 text-sm font-bold">OK</button>
+      </div>
+    </div>
+  );
+}
