@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PronosticsPreTournoiRouteImport } from './routes/pronostics.pre-tournoi'
+import { Route as PronosticsGroupesRouteImport } from './routes/pronostics.groupes'
+import { Route as PronosticsEliminatoiresRouteImport } from './routes/pronostics.eliminatoires'
 
 const InscriptionRoute = InscriptionRouteImport.update({
   id: '/inscription',
@@ -28,35 +31,81 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PronosticsPreTournoiRoute = PronosticsPreTournoiRouteImport.update({
+  id: '/pronostics/pre-tournoi',
+  path: '/pronostics/pre-tournoi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronosticsGroupesRoute = PronosticsGroupesRouteImport.update({
+  id: '/pronostics/groupes',
+  path: '/pronostics/groupes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronosticsEliminatoiresRoute = PronosticsEliminatoiresRouteImport.update({
+  id: '/pronostics/eliminatoires',
+  path: '/pronostics/eliminatoires',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
+  '/pronostics/groupes': typeof PronosticsGroupesRoute
+  '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/connexion' | '/inscription'
+  fullPaths:
+    | '/'
+    | '/connexion'
+    | '/inscription'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/connexion' | '/inscription'
-  id: '__root__' | '/' | '/connexion' | '/inscription'
+  to:
+    | '/'
+    | '/connexion'
+    | '/inscription'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
+  id:
+    | '__root__'
+    | '/'
+    | '/connexion'
+    | '/inscription'
+    | '/pronostics/eliminatoires'
+    | '/pronostics/groupes'
+    | '/pronostics/pre-tournoi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConnexionRoute: typeof ConnexionRoute
   InscriptionRoute: typeof InscriptionRoute
+  PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
+  PronosticsGroupesRoute: typeof PronosticsGroupesRoute
+  PronosticsPreTournoiRoute: typeof PronosticsPreTournoiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +131,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pronostics/pre-tournoi': {
+      id: '/pronostics/pre-tournoi'
+      path: '/pronostics/pre-tournoi'
+      fullPath: '/pronostics/pre-tournoi'
+      preLoaderRoute: typeof PronosticsPreTournoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronostics/groupes': {
+      id: '/pronostics/groupes'
+      path: '/pronostics/groupes'
+      fullPath: '/pronostics/groupes'
+      preLoaderRoute: typeof PronosticsGroupesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronostics/eliminatoires': {
+      id: '/pronostics/eliminatoires'
+      path: '/pronostics/eliminatoires'
+      fullPath: '/pronostics/eliminatoires'
+      preLoaderRoute: typeof PronosticsEliminatoiresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConnexionRoute: ConnexionRoute,
   InscriptionRoute: InscriptionRoute,
+  PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
+  PronosticsGroupesRoute: PronosticsGroupesRoute,
+  PronosticsPreTournoiRoute: PronosticsPreTournoiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
