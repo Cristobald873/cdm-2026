@@ -8,7 +8,7 @@ export function useMatchesByStage(stage: string | string[]) {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
-    supabase.from("matches").select("*").in("stage", stages).order("kickoff_at").then(({ data: d }) => {
+    supabase.from("matches").select("*").in("stage", stages as any).order("kickoff_at").then(({ data: d }) => {
       if (mounted) { setData((d as Match[]) ?? []); setLoading(false); }
     });
     const ch = supabase.channel("matches-" + stages.join("-")).on("postgres_changes",
