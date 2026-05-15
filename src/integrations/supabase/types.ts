@@ -14,16 +14,230 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      group_results: {
+        Row: {
+          group_letter: string
+          qualified_1: string | null
+          qualified_2: string | null
+          updated_at: string
+        }
+        Insert: {
+          group_letter: string
+          qualified_1?: string | null
+          qualified_2?: string | null
+          updated_at?: string
+        }
+        Update: {
+          group_letter?: string
+          qualified_1?: string | null
+          qualified_2?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          away_team: string
+          group_letter: string | null
+          home_team: string
+          id: string
+          kickoff_at: string
+          match_number: number | null
+          real_away_score: number | null
+          real_home_score: number | null
+          stage: Database["public"]["Enums"]["match_stage"]
+          venue: string | null
+        }
+        Insert: {
+          away_team: string
+          group_letter?: string | null
+          home_team: string
+          id: string
+          kickoff_at: string
+          match_number?: number | null
+          real_away_score?: number | null
+          real_home_score?: number | null
+          stage: Database["public"]["Enums"]["match_stage"]
+          venue?: string | null
+        }
+        Update: {
+          away_team?: string
+          group_letter?: string | null
+          home_team?: string
+          id?: string
+          kickoff_at?: string
+          match_number?: number | null
+          real_away_score?: number | null
+          real_home_score?: number | null
+          stage?: Database["public"]["Enums"]["match_stage"]
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      pre_tournament_predictions: {
+        Row: {
+          group_letter: string
+          id: string
+          points_earned: number | null
+          qualified_1: string | null
+          qualified_2: string | null
+          top_scorer: string | null
+          tournament_winner: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          group_letter: string
+          id?: string
+          points_earned?: number | null
+          qualified_1?: string | null
+          qualified_2?: string | null
+          top_scorer?: string | null
+          tournament_winner?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          group_letter?: string
+          id?: string
+          points_earned?: number | null
+          qualified_1?: string | null
+          qualified_2?: string | null
+          top_scorer?: string | null
+          tournament_winner?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pre_tournament_predictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          points_earned: number | null
+          pred_away: number
+          pred_home: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          points_earned?: number | null
+          pred_away: number
+          pred_home: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          points_earned?: number | null
+          pred_away?: number
+          pred_home?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar: string
+          color: string
+          created_at: string
+          id: string
+          is_admin: boolean
+          pseudo: string
+        }
+        Insert: {
+          avatar?: string
+          color?: string
+          created_at?: string
+          id: string
+          is_admin?: boolean
+          pseudo: string
+        }
+        Update: {
+          avatar?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          pseudo?: string
+        }
+        Relationships: []
+      }
+      tournament_settings: {
+        Row: {
+          id: number
+          real_top_scorer: string | null
+          real_winner: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          real_top_scorer?: string | null
+          real_winner?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          real_top_scorer?: string | null
+          real_winner?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      compute_match_points: {
+        Args: {
+          _pred_away: number
+          _pred_home: number
+          _real_away: number
+          _real_home: number
+          _stage: Database["public"]["Enums"]["match_stage"]
+        }
+        Returns: number
+      }
+      is_admin: { Args: { _uid: string }; Returns: boolean }
+      pre_tournament_locked: { Args: never; Returns: boolean }
+      stage_multiplier: {
+        Args: { _stage: Database["public"]["Enums"]["match_stage"] }
+        Returns: number
+      }
     }
     Enums: {
-      [_ in never]: never
+      match_stage: "GROUP" | "R32" | "R16" | "QF" | "SF" | "THIRD" | "FINAL"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +364,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      match_stage: ["GROUP", "R32", "R16", "QF", "SF", "THIRD", "FINAL"],
+    },
   },
 } as const
