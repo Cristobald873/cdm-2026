@@ -83,12 +83,12 @@ function Page() {
           <div className="mt-6 rounded-xl border border-border bg-card p-5">
             <h2 className="font-display text-2xl text-gold">Bonus</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <Sel label="🏆 Vainqueur du tournoi (10 pts)"
+              <Sel label="🏆 Vainqueur du tournoi (15 pts)"
                 value={rows.A?.tournament_winner ?? ""}
                 onChange={(v) => GROUP_LETTERS.forEach((g) => save(g, { tournament_winner: v }))}
                 options={ALL_TEAMS} disabled={locked} />
               <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wide text-muted-foreground">⚽ Meilleur buteur (5 pts)</span>
+                <span className="mb-1 block text-xs uppercase tracking-wide text-muted-foreground">⚽ Meilleur buteur (10 pts)</span>
                 <input
                   className="w-full rounded-md border border-border bg-input px-3 py-2 outline-none focus:border-primary"
                   value={rows.A?.top_scorer ?? ""}
