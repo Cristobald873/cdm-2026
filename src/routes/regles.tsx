@@ -12,8 +12,9 @@ function Page() {
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
           <li>Inscris-toi avec un pseudo, un avatar et une couleur.</li>
           <li>Pronostique le score de chaque match avant le coup d'envoi.</li>
-          <li>Sauvegarde automatique. Verrouillage strict à l'heure du match.</li>
-          <li>Ajoute aussi tes pronos pré-tournoi avant le 11 juin 2026 21h.</li>
+          <li>Sauvegarde automatique. Verrouillage strict côté serveur à l'heure du match — peu importe ce que fait le navigateur.</li>
+          <li>Tous les horaires sont affichés en <strong>heure de Paris</strong> (CEST, UTC+2 pendant le tournoi).</li>
+          <li>Ajoute aussi tes pronos pré-tournoi avant le 11 juin 2026 à 21h00 (Paris).</li>
         </ul>
       </div>
 
@@ -32,11 +33,29 @@ function Page() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-5">
-        <h2 className="font-display text-2xl">Barème — Pré-tournoi</h2>
+        <h2 className="font-display text-2xl">Prolongations & Tirs au but</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          En phase éliminatoire, ton pronostic compte sur le score à la fin du
+          <strong> temps réglementaire (90 min) + prolongations (120 min)</strong>.
+          Si le match se termine aux tirs au but, le score retenu reste celui à
+          l'issue des prolongations (ex&nbsp;: <em>2–2 a.p.</em>). Dans ce cas,
+          seul le score exact <em>2-2</em> est récompensé — il n'y a pas de
+          «&nbsp;bon vainqueur&nbsp;» possible puisque les deux équipes sont à
+          égalité à l'issue du temps de jeu. Les pénaltys servent uniquement à
+          désigner le qualifié pour le tableau.
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-display text-2xl">Pronostics pré-tournoi</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ces pronostics sont verrouillés au coup d'envoi du premier match
+          (11 juin 2026 à 21h Paris). Tu peux pronostiquer&nbsp;:
+        </p>
         <ul className="mt-2 space-y-1 text-sm">
-          <li>Équipe qualifiée d'un groupe : <span className="text-gold">2 pts</span> chacune</li>
-          <li>Vainqueur final correct : <span className="text-gold">10 pts</span></li>
-          <li>Meilleur buteur correct : <span className="text-gold">5 pts</span></li>
+          <li>🔮 Les 2 équipes qualifiées de chaque groupe : <span className="text-gold">+2 pts</span> chacune</li>
+          <li>🏆 Le vainqueur final du tournoi : <span className="text-gold">+15 pts</span></li>
+          <li>⚽ Le meilleur buteur : <span className="text-gold">+10 pts</span></li>
         </ul>
       </div>
 
