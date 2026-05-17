@@ -43,10 +43,19 @@ export type Database = {
           id: string
           kickoff_at: string
           match_number: number | null
+          penalty_winner: string | null
           real_away_score: number | null
+          real_away_score_90: number | null
+          real_away_score_aet: number | null
+          real_away_score_pens: number | null
           real_home_score: number | null
+          real_home_score_90: number | null
+          real_home_score_aet: number | null
+          real_home_score_pens: number | null
           stage: Database["public"]["Enums"]["match_stage"]
           venue: string | null
+          went_to_aet: boolean
+          went_to_penalties: boolean
         }
         Insert: {
           away_team: string
@@ -55,10 +64,19 @@ export type Database = {
           id: string
           kickoff_at: string
           match_number?: number | null
+          penalty_winner?: string | null
           real_away_score?: number | null
+          real_away_score_90?: number | null
+          real_away_score_aet?: number | null
+          real_away_score_pens?: number | null
           real_home_score?: number | null
+          real_home_score_90?: number | null
+          real_home_score_aet?: number | null
+          real_home_score_pens?: number | null
           stage: Database["public"]["Enums"]["match_stage"]
           venue?: string | null
+          went_to_aet?: boolean
+          went_to_penalties?: boolean
         }
         Update: {
           away_team?: string
@@ -67,10 +85,19 @@ export type Database = {
           id?: string
           kickoff_at?: string
           match_number?: number | null
+          penalty_winner?: string | null
           real_away_score?: number | null
+          real_away_score_90?: number | null
+          real_away_score_aet?: number | null
+          real_away_score_pens?: number | null
           real_home_score?: number | null
+          real_home_score_90?: number | null
+          real_home_score_aet?: number | null
+          real_home_score_pens?: number | null
           stage?: Database["public"]["Enums"]["match_stage"]
           venue?: string | null
+          went_to_aet?: boolean
+          went_to_penalties?: boolean
         }
         Relationships: []
       }
