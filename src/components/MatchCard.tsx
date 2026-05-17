@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Lock, Unlock, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useNow } from "@/lib/use-now";
+import { formatParis, getScoreView, type MatchScoreInput } from "@/lib/format";
 import { toast } from "sonner";
 
-export type Match = {
+export type Match = MatchScoreInput & {
   id: string;
   stage: string;
   group_letter: string | null;
@@ -15,8 +15,6 @@ export type Match = {
   away_team: string;
   kickoff_at: string;
   venue: string | null;
-  real_home_score: number | null;
-  real_away_score: number | null;
 };
 
 export type Prediction = {
@@ -34,6 +32,7 @@ function ScoreInput({ value, onChange, disabled }: { value: number | ""; onChang
       inputMode="numeric"
       value={value}
       disabled={disabled}
+      readOnly={disabled}
       onChange={(e) => {
         const v = e.target.value;
         onChange(v === "" ? "" : Math.max(0, Math.min(20, parseInt(v) || 0)));
@@ -45,8 +44,20 @@ function ScoreInput({ value, onChange, disabled }: { value: number | ""; onChang
 
 export function MatchCard({ match, prediction }: { match: Match; prediction?: Prediction | null }) {
   const { user } = useAuth();
-  const locked = new Date(match.kickoff_at).getTime() <= Date.now();
-  const hasResult = match.real_home_score !== null && match.real_away_score !== null;
+  const now = useNow(30_000);
+  const kickoff = new Date(match.kickoff_at).getTime();
+  const locked = kickoff <= now;
+
+  const score = getScoreView(match);
+  const winnerSide: "home" | "away" | null = score
+    ? score.pens
+      ? score.pens.winner
+      : score.homeMain! > score.awayMain!
+        ? "home"
+        : score.awayMain! > score.homeMain!
+          ? "away"
+          : null
+    : null;
 
   const [home, setHome] = useState<number | "">(prediction?.pred_home ?? "");
   const [away, setAway] = useState<number | "">(prediction?.pred_away ?? "");
@@ -70,7 +81,7 @@ export function MatchCard({ match, prediction }: { match: Match; prediction?: Pr
         { onConflict: "user_id,match_id" }
       );
       setSaving(false);
-      if (error) toast.error("Erreur de sauvegarde");
+      if (error) toast.error(error.message.includes("row-level") ? "Match verrouillé" : "Erreur de sauvegarde");
     }, 800);
     return () => clearTimeout(t);
   }, [home, away, user, locked, match.id]);
@@ -79,9 +90,9 @@ export function MatchCard({ match, prediction }: { match: Match; prediction?: Pr
     <div className="rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/40">
       <div className="mb-3 flex items-center justify-between text-xs">
         <span className="text-muted-foreground">
-          {format(new Date(match.kickoff_at), "EEE d MMM · HH:mm", { locale: fr })}
+          {formatParis(match.kickoff_at)} <span className="opacity-60">(Paris)</span>
         </span>
-        {hasResult ? (
+        {score ? (
           <span className="chip bg-result/20 text-result"><CheckCircle2 className="h-3 w-3" />Résultat</span>
         ) : locked ? (
           <span className="chip bg-locked/20 text-locked"><Lock className="h-3 w-3" />Verrouillé</span>
@@ -91,23 +102,36 @@ export function MatchCard({ match, prediction }: { match: Match; prediction?: Pr
       </div>
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div className="text-right font-semibold">{match.home_team}</div>
+        <div className={`text-right font-semibold ${winnerSide === "home" ? "text-gold" : ""}`}>{match.home_team}</div>
         <div className="flex items-center gap-2">
           <ScoreInput value={home} onChange={setHome} disabled={locked || !user} />
           <span className="font-display text-xl text-muted-foreground">:</span>
           <ScoreInput value={away} onChange={setAway} disabled={locked || !user} />
         </div>
-        <div className="font-semibold">{match.away_team}</div>
+        <div className={`font-semibold ${winnerSide === "away" ? "text-gold" : ""}`}>{match.away_team}</div>
       </div>
 
-      {hasResult && (
-        <div className="mt-3 flex items-center justify-center gap-3 border-t border-border pt-3 text-sm">
-          <span className="text-muted-foreground">Score réel</span>
-          <span className="font-display text-2xl text-result">{match.real_home_score} - {match.real_away_score}</span>
-          {prediction?.points_earned !== null && prediction?.points_earned !== undefined && (
-            <span className={`chip ${prediction.points_earned > 0 ? "bg-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-              +{prediction.points_earned} pts
+      {score && (
+        <div className="mt-3 flex flex-col items-center gap-1 border-t border-border pt-3 text-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-muted-foreground">Score réel</span>
+            <span className="font-display text-2xl text-result">
+              {score.homeMain} - {score.awayMain}
+              {score.suffix && <span className="ml-2 text-base text-muted-foreground">{score.suffix}</span>}
             </span>
+            {prediction?.points_earned !== null && prediction?.points_earned !== undefined && (
+              <span className={`chip ${prediction.points_earned > 0 ? "bg-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                +{prediction.points_earned} pts
+              </span>
+            )}
+          </div>
+          {score.pens && (
+            <div className="text-xs font-semibold text-orange-400">
+              ⚽ TAB&nbsp;{score.pens.home} – {score.pens.away}
+              <span className="ml-2 text-muted-foreground">
+                · {score.pens.winner === "home" ? match.home_team : match.away_team} qualifié
+              </span>
+            </div>
           )}
         </div>
       )}
