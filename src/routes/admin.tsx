@@ -3,9 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { GROUP_LETTERS, TEAMS_BY_GROUP, STAGE_LABELS, ALL_TEAMS } from "@/lib/teams";
+import { formatParis } from "@/lib/format";
 import { toast } from "sonner";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 export const Route = createFileRoute("/admin")({ component: Page });
 
@@ -13,6 +12,11 @@ type Match = {
   id: string; stage: string; group_letter: string | null; match_number: number | null;
   home_team: string; away_team: string; kickoff_at: string;
   real_home_score: number | null; real_away_score: number | null;
+  real_home_score_90: number | null; real_away_score_90: number | null;
+  real_home_score_aet: number | null; real_away_score_aet: number | null;
+  real_home_score_pens: number | null; real_away_score_pens: number | null;
+  penalty_winner: "home" | "away" | null;
+  went_to_aet: boolean; went_to_penalties: boolean;
 };
 
 const STAGES = ["GROUP", "R32", "R16", "QF", "SF", "THIRD", "FINAL"] as const;
