@@ -132,41 +132,111 @@ function Page() {
 }
 
 function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: () => void; editTeams: boolean }) {
+  const isElim = match.stage !== "GROUP";
   const [home, setHome] = useState(match.home_team);
   const [away, setAway] = useState(match.away_team);
-  const [hs, setHs] = useState<number | "">(match.real_home_score ?? "");
-  const [as_, setAs] = useState<number | "">(match.real_away_score ?? "");
+
+  const [h90, setH90] = useState<number | "">(match.real_home_score_90 ?? match.real_home_score ?? "");
+  const [a90, setA90] = useState<number | "">(match.real_away_score_90 ?? match.real_away_score ?? "");
+  const [aet, setAet] = useState<boolean>(match.went_to_aet);
+  const [hAet, setHAet] = useState<number | "">(match.real_home_score_aet ?? "");
+  const [aAet, setAAet] = useState<number | "">(match.real_away_score_aet ?? "");
+  const [pens, setPens] = useState<boolean>(match.went_to_penalties);
+  const [hPens, setHPens] = useState<number | "">(match.real_home_score_pens ?? "");
+  const [aPens, setAPens] = useState<number | "">(match.real_away_score_pens ?? "");
 
   useEffect(() => {
     setHome(match.home_team); setAway(match.away_team);
-    setHs(match.real_home_score ?? ""); setAs(match.real_away_score ?? "");
-  }, [match.id, match.home_team, match.away_team, match.real_home_score, match.real_away_score]);
+    setH90(match.real_home_score_90 ?? match.real_home_score ?? "");
+    setA90(match.real_away_score_90 ?? match.real_away_score ?? "");
+    setAet(match.went_to_aet);
+    setHAet(match.real_home_score_aet ?? ""); setAAet(match.real_away_score_aet ?? "");
+    setPens(match.went_to_penalties);
+    setHPens(match.real_home_score_pens ?? ""); setAPens(match.real_away_score_pens ?? "");
+  }, [match.id]);
+
+  const tie90 = h90 !== "" && a90 !== "" && Number(h90) === Number(a90);
+  const tieAet = aet && hAet !== "" && aAet !== "" && Number(hAet) === Number(aAet);
 
   const save = async () => {
-    const { error } = await supabase.from("matches").update({
+    const payload: any = {
       home_team: home,
       away_team: away,
-      real_home_score: hs === "" ? null : Number(hs),
-      real_away_score: as_ === "" ? null : Number(as_),
-    }).eq("id", match.id);
+      real_home_score_90: h90 === "" ? null : Number(h90),
+      real_away_score_90: a90 === "" ? null : Number(a90),
+      went_to_aet: isElim && aet,
+      real_home_score_aet: isElim && aet && hAet !== "" ? Number(hAet) : null,
+      real_away_score_aet: isElim && aet && aAet !== "" ? Number(aAet) : null,
+      went_to_penalties: isElim && pens,
+      real_home_score_pens: isElim && pens && hPens !== "" ? Number(hPens) : null,
+      real_away_score_pens: isElim && pens && aPens !== "" ? Number(aPens) : null,
+    };
+    // Manual reset for non-elim or no-aet/no-pens cases
+    if (!isElim || !aet) {
+      payload.real_home_score_aet = null;
+      payload.real_away_score_aet = null;
+    }
+    if (!isElim || !pens) {
+      payload.real_home_score_pens = null;
+      payload.real_away_score_pens = null;
+    }
+    const { error } = await supabase.from("matches").update(payload).eq("id", match.id);
     if (error) toast.error(error.message);
     else { toast.success("Match mis à jour"); onSaved(); }
   };
 
   return (
     <div className="rounded-xl border border-border bg-card p-3">
-      <div className="text-xs text-muted-foreground">{match.id} · {format(new Date(match.kickoff_at), "d MMM HH:mm", { locale: fr })}</div>
-      <div className="mt-2 grid grid-cols-[1fr_auto_auto_auto_1fr_auto] items-center gap-2">
+      <div className="text-xs text-muted-foreground">{match.id} · {formatParis(match.kickoff_at)} (Paris)</div>
+      <div className="mt-2 grid grid-cols-[1fr_auto_auto_auto_1fr] items-center gap-2">
         {editTeams ? (
           <input value={home} onChange={(e) => setHome(e.target.value)} className="rounded-md border border-border bg-input px-2 py-1 text-sm" />
         ) : <div className="font-semibold">{match.home_team}</div>}
-        <input type="number" min={0} value={hs} onChange={(e) => setHs(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
-        <span>:</span>
-        <input type="number" min={0} value={as_} onChange={(e) => setAs(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
+        <input type="number" min={0} value={h90} onChange={(e) => setH90(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
+        <span className="text-xs text-muted-foreground">90'</span>
+        <input type="number" min={0} value={a90} onChange={(e) => setA90(e.target.value === "" ? "" : Number(e.target.value))} className="h-10 w-14 rounded-md border border-border bg-input text-center font-display text-xl" />
         {editTeams ? (
           <input value={away} onChange={(e) => setAway(e.target.value)} className="rounded-md border border-border bg-input px-2 py-1 text-sm" />
         ) : <div className="font-semibold">{match.away_team}</div>}
-        <button onClick={save} className="rounded-md bg-gold px-3 py-1.5 text-sm font-bold">OK</button>
+      </div>
+
+      {isElim && tie90 && (
+        <div className="mt-3 border-t border-border pt-3">
+          {!aet ? (
+            <button onClick={() => setAet(true)} className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-secondary/80">+ Prolongations</button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Après prolong.</span>
+              <input type="number" min={0} value={hAet} onChange={(e) => setHAet(e.target.value === "" ? "" : Number(e.target.value))} className="h-9 w-12 rounded-md border border-border bg-input text-center font-display" />
+              <span>–</span>
+              <input type="number" min={0} value={aAet} onChange={(e) => setAAet(e.target.value === "" ? "" : Number(e.target.value))} className="h-9 w-12 rounded-md border border-border bg-input text-center font-display" />
+              <button onClick={() => { setAet(false); setPens(false); }} className="ml-2 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isElim && aet && tieAet && (
+        <div className="mt-2">
+          {!pens ? (
+            <button onClick={() => setPens(true)} className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-secondary/80">+ Tirs au but</button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">TAB</span>
+              <input type="number" min={0} value={hPens} onChange={(e) => setHPens(e.target.value === "" ? "" : Number(e.target.value))} className="h-9 w-12 rounded-md border border-border bg-input text-center font-display text-orange-400" />
+              <span>–</span>
+              <input type="number" min={0} value={aPens} onChange={(e) => setAPens(e.target.value === "" ? "" : Number(e.target.value))} className="h-9 w-12 rounded-md border border-border bg-input text-center font-display text-orange-400" />
+              {hPens !== "" && aPens !== "" && Number(hPens) !== Number(aPens) && (
+                <span className="text-xs text-gold">→ {Number(hPens) > Number(aPens) ? home : away} qualifié</span>
+              )}
+              <button onClick={() => setPens(false)} className="ml-2 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="mt-3 flex justify-end">
+        <button onClick={save} className="rounded-md bg-gold px-4 py-1.5 text-sm font-bold text-primary-foreground">Enregistrer</button>
       </div>
     </div>
   );
