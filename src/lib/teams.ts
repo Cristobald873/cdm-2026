@@ -19,7 +19,7 @@ export const STAGE_LABELS: Record<string, string> = {
   GROUP: "Groupes",
   R32: "1/16",
   R16: "1/8",
-  QF: "Quarts",
+  QF: "1/4",
   SF: "Demi-finales",
   THIRD: "3e place",
   FINAL: "Finale",
