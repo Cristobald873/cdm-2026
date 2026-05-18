@@ -14,7 +14,7 @@ function Page() {
           <li>Pronostique le score de chaque match avant le coup d'envoi.</li>
           <li>Sauvegarde automatique. Verrouillage strict côté serveur à l'heure du match — peu importe ce que fait le navigateur.</li>
           <li>Tous les horaires sont affichés en <strong>heure de Paris</strong> (CEST, UTC+2 pendant le tournoi).</li>
-          <li>Ajoute aussi tes pronos pré-tournoi avant le 11 juin 2026 à 21h00 (Paris).</li>
+          <li>Ajoute aussi tes pronostics éliminatoires avant le 11 juin 2026 à 21h00 (Paris).</li>
         </ul>
       </div>
 
@@ -47,7 +47,7 @@ function Page() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-5">
-        <h2 className="font-display text-2xl">Pronostics pré-tournoi</h2>
+        <h2 className="font-display text-2xl">Éliminatoires (Bonus)</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Ces pronostics sont verrouillés au coup d'envoi du premier match
           (11 juin 2026 à 21h Paris). Tu peux pronostiquer&nbsp;:
