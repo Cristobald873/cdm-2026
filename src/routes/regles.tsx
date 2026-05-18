@@ -62,7 +62,7 @@ function Page() {
       <div className="rounded-xl border border-border bg-card p-5">
         <h2 className="font-display text-2xl">Format</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          48 équipes · 12 groupes de 4 · 16 premiers + 16 deuxièmes + 8 meilleurs 3es qualifiés pour les 32es de finale.
+          48 équipes · 12 groupes de 4 · 16 premiers + 16 deuxièmes + 8 meilleurs 3es qualifiés pour les 1/16 de finale.
           11 juin → 19 juillet 2026.
         </p>
       </div>
