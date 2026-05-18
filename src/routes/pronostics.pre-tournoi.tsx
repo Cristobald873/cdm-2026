@@ -57,7 +57,7 @@ function Page() {
   return (
     <section>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-display text-4xl text-gold">Éliminatoires</h1>
+        <h1 className="font-display text-4xl text-gold">Qualifications</h1>
         {locked && <span className="chip bg-locked/20 text-locked"><Lock className="h-3 w-3" />Verrouillé</span>}
       </div>
       <p className="text-sm text-muted-foreground">Verrouillage le 11 juin 2026 à 21h (Paris).</p>

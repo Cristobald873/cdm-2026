@@ -7,7 +7,7 @@ const NAV = [
   { to: "/", label: "Accueil", icon: Trophy },
   { to: "/pronostics/groupes", label: "Groupes", icon: ListChecks },
   { to: "/pronostics/eliminatoires", label: "Élim.", icon: Swords },
-  { to: "/pronostics/pre-tournoi", label: "Éliminatoires", icon: Sparkles },
+  { to: "/pronostics/pre-tournoi", label: "Qualifications", icon: Sparkles },
   { to: "/classements", label: "Classements", icon: Trophy },
   { to: "/podium", label: "Podium", icon: Medal },
   { to: "/regles", label: "Règles", icon: BookOpen },
