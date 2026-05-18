@@ -18,7 +18,7 @@ export const ALL_TEAMS = Object.values(TEAMS_BY_GROUP).flat();
 export const STAGE_LABELS: Record<string, string> = {
   GROUP: "Groupes",
   R32: "1/16",
-  R16: "8es",
+  R16: "1/8",
   QF: "Quarts",
   SF: "Demi-finales",
   THIRD: "3e place",
