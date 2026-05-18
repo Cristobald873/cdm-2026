@@ -56,7 +56,7 @@ function Home() {
           {[
             { icon: Target, t: "Score exact", v: "5 pts" },
             { icon: Trophy, t: "Bon résultat", v: "2-3 pts" },
-            { icon: Users, t: "Éliminatoires", v: "Bonus" },
+            { icon: Users, t: "Qualifications", v: "Bonus" },
           ].map((c) => (
             <div key={c.t} className="rounded-xl border border-border bg-card p-4">
               <c.icon className="mx-auto h-6 w-6 text-gold" />
@@ -104,7 +104,7 @@ function Home() {
           <p className="text-sm text-muted-foreground">72 matchs de poules</p>
         </Link>
         <Link to="/pronostics/pre-tournoi" className="rounded-xl border border-border bg-card p-5 hover:border-primary">
-          <h3 className="font-display text-2xl">Éliminatoires</h3>
+          <h3 className="font-display text-2xl">Qualifications</h3>
           <p className="text-sm text-muted-foreground">Qualifiés, vainqueur, buteur</p>
         </Link>
         <Link to="/classements" className="rounded-xl border border-border bg-card p-5 hover:border-primary">
