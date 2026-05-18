@@ -14,10 +14,19 @@ const TABS = [
   { k: "general", label: "🏆 Général" },
   { k: "exact", label: "🎯 Scores exacts" },
   { k: "good", label: "✅ Bons résultats" },
-  { k: "goals", label: "⚽ Buts devinés" },
+  { k: "goals", label: "🌍 Buts devinés" },
   { k: "oracle", label: "🔮 Oracle" },
   { k: "loose", label: "😂 Looseur" },
 ] as const;
+
+const TAB_DESCRIPTIONS: Record<typeof TABS[number]["k"], string> = {
+  general: "Le classement principal. Additionne tous tes points : matchs de groupes, éliminatoires et pronostics pré-tournoi. C'est celui-là qui compte pour le podium final.",
+  exact: "Combien de fois tu as pronostiqué le score parfait (ex: 2-1 et c'était bien 2-1). Le plus dur à avoir — chaque score exact vaut 5 pts en poules et 10 pts en éliminatoires.",
+  good: "Combien de fois tu as trouvé le bon vainqueur (ou le bon nul), même sans le score exact. Ça mesure ton instinct foot au-delà de la précision des scores.",
+  goals: "Combien de buts individuels tu as devinés correctement. Si tu pronostiques 2-1 et que c'est 2-0, tu as quand même deviné le score de l'équipe qui a marqué 2. C'est le classement des vrais analystes offensifs.",
+  oracle: "Tes pronostics faits avant le début du tournoi : les équipes qualifiées de chaque groupe (+2 pts chacune), le vainqueur final (+15 pts) et le meilleur buteur (+10 pts). Ce classement mesure ta vision long terme — impossible de rattraper ça en cours de route.",
+  loose: "Le classement inversé. Trié du moins bon au meilleur. Celui qui finit en tête ici a une tournée à offrir.",
+};
 
 function Page() {
   const { user } = useAuth();
@@ -86,6 +95,8 @@ function Page() {
           </button>
         ))}
       </div>
+
+      <p className="mt-3 text-sm text-muted-foreground">{TAB_DESCRIPTIONS[tab]}</p>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
         {ranking.length === 0 && <p className="p-6 text-center text-muted-foreground">Pas encore de joueurs.</p>}

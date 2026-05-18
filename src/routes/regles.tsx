@@ -60,6 +60,38 @@ function Page() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-display text-2xl">📊 Les 6 classements</h2>
+        <ul className="mt-3 space-y-3 text-sm">
+          <li>
+            <p><span className="text-gold">🏆 Général</span> — La somme de tous tes points. C'est le classement officiel.</p>
+          </li>
+          <li>
+            <p><span className="text-gold">🎯 Scores exacts</span> — Ton nombre de scores parfaits.</p>
+            <p className="text-xs text-muted-foreground">Poules : 5 pts · Éliminatoires : 10 pts</p>
+          </li>
+          <li>
+            <p><span className="text-gold">✅ Bons résultats</span> — Ton nombre de bons vainqueurs ou nuls trouvés.</p>
+            <p className="text-xs text-muted-foreground">Poules : 2 pts · Éliminatoires : 4 pts</p>
+          </li>
+          <li>
+            <p><span className="text-gold">🌍 Buts devinés</span> — Ton nombre de scores d'équipe devinés individuellement (le 2 d'un 2-1 compte même si tu avais dit 2-0).</p>
+          </li>
+          <li>
+            <p><span className="text-gold">🔮 Oracle</span> — Tes pronos pré-tournoi uniquement :</p>
+            <ul className="mt-1 ml-4 space-y-0.5 text-xs text-muted-foreground">
+              <li>· Équipe qualifiée d'un groupe : <span className="text-gold">+2 pts</span></li>
+              <li>· Vainqueur du tournoi : <span className="text-gold">+15 pts</span></li>
+              <li>· Meilleur buteur : <span className="text-gold">+10 pts</span></li>
+            </ul>
+            <p className="mt-1 text-xs text-muted-foreground">⚠️ Verrouillés dès le 1er match, aucune modification possible ensuite.</p>
+          </li>
+          <li>
+            <p><span className="text-gold">😂 Looseur</span> — Classement inversé. Pour l'honneur.</p>
+          </li>
+        </ul>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
         <h2 className="font-display text-2xl">Format</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           48 équipes · 12 groupes de 4 · 16 premiers + 16 deuxièmes + 8 meilleurs 3es qualifiés pour les 1/16 de finale.
