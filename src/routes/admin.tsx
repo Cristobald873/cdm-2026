@@ -180,6 +180,10 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
       payload.real_home_score_pens = null;
       payload.real_away_score_pens = null;
     }
+    // Confirm teams automatically when admin saves with both teams filled
+    if (isElim && home.trim() && away.trim()) {
+      payload.teams_confirmed = true;
+    }
     const { error } = await supabase.from("matches").update(payload).eq("id", match.id);
     if (error) toast.error(error.message);
     else { toast.success("Match mis à jour"); onSaved(); }
