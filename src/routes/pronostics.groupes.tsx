@@ -4,6 +4,8 @@ import { useMatchesByStage, useMyPredictions } from "@/lib/use-matches";
 import { MatchCard } from "@/components/MatchCard";
 import { GROUP_LETTERS } from "@/lib/teams";
 import { useAuth } from "@/lib/auth-context";
+import { PlayerSelector } from "@/components/PlayerSelector";
+import { usePlayers, useAllPredictions } from "@/lib/use-players";
 
 export const Route = createFileRoute("/pronostics/groupes")({ component: Page });
 
@@ -12,12 +14,19 @@ function Page() {
   const [filter, setFilter] = useState<string>("ALL");
   const { data, loading } = useMatchesByStage("GROUP");
   const preds = useMyPredictions();
+  const { players } = usePlayers();
+  const allPreds = useAllPredictions();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const selectedPlayers = players.filter((p) => selected.has(p.id));
   const filtered = filter === "ALL" ? data : data.filter((m) => m.group_letter === filter);
 
   return (
     <section>
       <h1 className="font-display text-4xl text-gold">Phase de groupes</h1>
       <p className="text-sm text-muted-foreground">Sauvegarde automatique. Verrouillage au coup d'envoi.</p>
+
+      <PlayerSelector players={players} selected={selected} onToggle={toggle} />
 
       <div className="mt-4 flex flex-wrap gap-1">
         <Btn active={filter === "ALL"} onClick={() => setFilter("ALL")}>Tous</Btn>
@@ -31,7 +40,7 @@ function Page() {
       {loading ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {filtered.map((m) => (
-            <MatchCard key={m.id} match={m} prediction={preds[m.id]} />
+            <MatchCard key={m.id} match={m} prediction={preds[m.id]} selectedPlayers={selectedPlayers} predsForMatch={allPreds.get(m.id)} />
           ))}
         </div>
       )}

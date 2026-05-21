@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReglesRouteImport } from './routes/regles'
 import { Route as PodiumRouteImport } from './routes/podium'
+import { Route as JoueursRouteImport } from './routes/joueurs'
 import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as ClassementsRouteImport } from './routes/classements'
@@ -28,6 +29,11 @@ const ReglesRoute = ReglesRouteImport.update({
 const PodiumRoute = PodiumRouteImport.update({
   id: '/podium',
   path: '/podium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoueursRoute = JoueursRouteImport.update({
+  id: '/joueurs',
+  path: '/joueurs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InscriptionRoute = InscriptionRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/classements': typeof ClassementsRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/classements': typeof ClassementsRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/classements': typeof ClassementsRoute
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
+  '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/connexion'
     | '/inscription'
+    | '/joueurs'
     | '/podium'
     | '/regles'
     | '/pronostics/eliminatoires'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/connexion'
     | '/inscription'
+    | '/joueurs'
     | '/podium'
     | '/regles'
     | '/pronostics/eliminatoires'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/connexion'
     | '/inscription'
+    | '/joueurs'
     | '/podium'
     | '/regles'
     | '/pronostics/eliminatoires'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   ClassementsRoute: typeof ClassementsRoute
   ConnexionRoute: typeof ConnexionRoute
   InscriptionRoute: typeof InscriptionRoute
+  JoueursRoute: typeof JoueursRoute
   PodiumRoute: typeof PodiumRoute
   ReglesRoute: typeof ReglesRoute
   PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/podium'
       fullPath: '/podium'
       preLoaderRoute: typeof PodiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/joueurs': {
+      id: '/joueurs'
+      path: '/joueurs'
+      fullPath: '/joueurs'
+      preLoaderRoute: typeof JoueursRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inscription': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClassementsRoute: ClassementsRoute,
   ConnexionRoute: ConnexionRoute,
   InscriptionRoute: InscriptionRoute,
+  JoueursRoute: JoueursRoute,
   PodiumRoute: PodiumRoute,
   ReglesRoute: ReglesRoute,
   PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
