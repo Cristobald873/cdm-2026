@@ -53,6 +53,7 @@ export type Database = {
           real_home_score_aet: number | null
           real_home_score_pens: number | null
           stage: Database["public"]["Enums"]["match_stage"]
+          teams_confirmed: boolean
           venue: string | null
           went_to_aet: boolean
           went_to_penalties: boolean
@@ -74,6 +75,7 @@ export type Database = {
           real_home_score_aet?: number | null
           real_home_score_pens?: number | null
           stage: Database["public"]["Enums"]["match_stage"]
+          teams_confirmed?: boolean
           venue?: string | null
           went_to_aet?: boolean
           went_to_penalties?: boolean
@@ -95,6 +97,7 @@ export type Database = {
           real_home_score_aet?: number | null
           real_home_score_pens?: number | null
           stage?: Database["public"]["Enums"]["match_stage"]
+          teams_confirmed?: boolean
           venue?: string | null
           went_to_aet?: boolean
           went_to_penalties?: boolean
