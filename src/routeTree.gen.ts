@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PronosticsPreTournoiRouteImport } from './routes/pronostics.pre-tournoi'
 import { Route as PronosticsGroupesRouteImport } from './routes/pronostics.groupes'
 import { Route as PronosticsEliminatoiresRouteImport } from './routes/pronostics.eliminatoires'
+import { Route as ApiPublicCronMatchRemindersRouteImport } from './routes/api/public/cron/match-reminders'
 
 const ReglesRoute = ReglesRouteImport.update({
   id: '/regles',
@@ -76,6 +77,12 @@ const PronosticsEliminatoiresRoute = PronosticsEliminatoiresRouteImport.update({
   path: '/pronostics/eliminatoires',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronMatchRemindersRoute =
+  ApiPublicCronMatchRemindersRouteImport.update({
+    id: '/api/public/cron/match-reminders',
+    path: '/api/public/cron/match-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
+  '/api/public/cron/match-reminders': typeof ApiPublicCronMatchRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
+  '/api/public/cron/match-reminders': typeof ApiPublicCronMatchRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
+  '/api/public/cron/match-reminders': typeof ApiPublicCronMatchRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
+    | '/api/public/cron/match-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
+    | '/api/public/cron/match-reminders'
   id:
     | '__root__'
     | '/'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
+    | '/api/public/cron/match-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +184,7 @@ export interface RootRouteChildren {
   PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
   PronosticsGroupesRoute: typeof PronosticsGroupesRoute
   PronosticsPreTournoiRoute: typeof PronosticsPreTournoiRoute
+  ApiPublicCronMatchRemindersRoute: typeof ApiPublicCronMatchRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PronosticsEliminatoiresRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/match-reminders': {
+      id: '/api/public/cron/match-reminders'
+      path: '/api/public/cron/match-reminders'
+      fullPath: '/api/public/cron/match-reminders'
+      preLoaderRoute: typeof ApiPublicCronMatchRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,7 +288,18 @@ const rootRouteChildren: RootRouteChildren = {
   PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
   PronosticsGroupesRoute: PronosticsGroupesRoute,
   PronosticsPreTournoiRoute: PronosticsPreTournoiRoute,
+  ApiPublicCronMatchRemindersRoute: ApiPublicCronMatchRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
