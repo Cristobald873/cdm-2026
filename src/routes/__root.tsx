@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppNav } from "@/components/AppNav";
 import { Toaster } from "sonner";
+import { usePushSetup } from "@/lib/use-push";
 
 function NotFoundComponent() {
   return (
