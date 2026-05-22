@@ -159,6 +159,8 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
   const tieAet = aet && hAet !== "" && aAet !== "" && Number(hAet) === Number(aAet);
 
   const save = async () => {
+    const wasConfirmed = match.teams_confirmed === true;
+    const hadScore = match.real_home_score !== null && match.real_away_score !== null;
     const payload: any = {
       home_team: home,
       away_team: away,
@@ -171,7 +173,6 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
       real_home_score_pens: isElim && pens && hPens !== "" ? Number(hPens) : null,
       real_away_score_pens: isElim && pens && aPens !== "" ? Number(aPens) : null,
     };
-    // Manual reset for non-elim or no-aet/no-pens cases
     if (!isElim || !aet) {
       payload.real_home_score_aet = null;
       payload.real_away_score_aet = null;
@@ -180,13 +181,22 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
       payload.real_home_score_pens = null;
       payload.real_away_score_pens = null;
     }
-    // Confirm teams automatically when admin saves with both teams filled
-    if (isElim && home.trim() && away.trim()) {
-      payload.teams_confirmed = true;
-    }
+    const elimNowConfirmed = isElim && home.trim() !== "" && away.trim() !== "";
+    if (elimNowConfirmed) payload.teams_confirmed = true;
+
     const { error } = await supabase.from("matches").update(payload).eq("id", match.id);
-    if (error) toast.error(error.message);
-    else { toast.success("Match mis à jour"); onSaved(); }
+    if (error) { toast.error(error.message); return; }
+    toast.success("Match mis à jour");
+    onSaved();
+
+    // Déclencheurs push (fire-and-forget)
+    const scoreNowSet = h90 !== "" && a90 !== "";
+    if (!hadScore && scoreNowSet) {
+      notifyMatchEnded({ data: { matchId: match.id } }).catch(() => {});
+    }
+    if (isElim && !wasConfirmed && elimNowConfirmed) {
+      notifyElimOpen({ data: { matchId: match.id } }).catch(() => {});
+    }
   };
 
   return (
