@@ -85,11 +85,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function PushBootstrap() {
+  usePushSetup();
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PushBootstrap />
         <AppNav />
         <main className="mx-auto max-w-6xl px-4 py-6">
           <Outlet />
