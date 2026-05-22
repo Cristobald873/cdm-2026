@@ -198,10 +198,10 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
     // Déclencheurs push (fire-and-forget)
     const scoreNowSet = h90 !== "" && a90 !== "";
     if (!hadScore && scoreNowSet) {
-      notifyMatchEnded({ data: { matchId: match.id } }).catch(() => {});
+      notifyEnded({ data: { matchId: match.id } }).catch(() => {});
     }
     if (isElim && !wasConfirmed && elimNowConfirmed) {
-      notifyElimOpen({ data: { matchId: match.id } }).catch(() => {});
+      notifyOpen({ data: { matchId: match.id } }).catch(() => {});
     }
   };
 
