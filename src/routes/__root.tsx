@@ -51,6 +51,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Pronos CdM 26" },
       { name: "mobile-web-app-capable", content: "yes" },
+      { property: "og:title", content: "Pronos CdM 2026" },
       { name: "twitter:title", content: "Pronos CdM 2026" },
       { property: "og:description", content: "Pronostics entre amis pour la Coupe du Monde 2026." },
       { name: "twitter:description", content: "Pronostics entre amis pour la Coupe du Monde 2026." },
