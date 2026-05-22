@@ -104,6 +104,30 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications_sent: {
+        Row: {
+          id: string
+          kind: string
+          ref_id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          ref_id: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          ref_id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pre_tournament_predictions: {
         Row: {
           group_letter: string
@@ -220,6 +244,36 @@ export type Database = {
           id?: string
           is_admin?: boolean
           pseudo?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }

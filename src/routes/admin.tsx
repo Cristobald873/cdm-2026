@@ -5,6 +5,8 @@ import { useAuth } from "@/lib/auth-context";
 import { GROUP_LETTERS, TEAMS_BY_GROUP, STAGE_LABELS, ALL_TEAMS } from "@/lib/teams";
 import { formatParis } from "@/lib/format";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyMatchEnded, notifyElimOpen } from "@/lib/push.functions";
 
 export const Route = createFileRoute("/admin")({ component: Page });
 
@@ -17,6 +19,7 @@ type Match = {
   real_home_score_pens: number | null; real_away_score_pens: number | null;
   penalty_winner: "home" | "away" | null;
   went_to_aet: boolean; went_to_penalties: boolean;
+  teams_confirmed: boolean;
 };
 
 const STAGES = ["GROUP", "R32", "R16", "QF", "SF", "THIRD", "FINAL"] as const;
@@ -133,8 +136,11 @@ function Page() {
 
 function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: () => void; editTeams: boolean }) {
   const isElim = match.stage !== "GROUP";
+  const notifyEnded = useServerFn(notifyMatchEnded);
+  const notifyOpen = useServerFn(notifyElimOpen);
   const [home, setHome] = useState(match.home_team);
   const [away, setAway] = useState(match.away_team);
+
 
   const [h90, setH90] = useState<number | "">(match.real_home_score_90 ?? match.real_home_score ?? "");
   const [a90, setA90] = useState<number | "">(match.real_away_score_90 ?? match.real_away_score ?? "");
@@ -159,6 +165,8 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
   const tieAet = aet && hAet !== "" && aAet !== "" && Number(hAet) === Number(aAet);
 
   const save = async () => {
+    const wasConfirmed = match.teams_confirmed === true;
+    const hadScore = match.real_home_score !== null && match.real_away_score !== null;
     const payload: any = {
       home_team: home,
       away_team: away,
@@ -171,7 +179,6 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
       real_home_score_pens: isElim && pens && hPens !== "" ? Number(hPens) : null,
       real_away_score_pens: isElim && pens && aPens !== "" ? Number(aPens) : null,
     };
-    // Manual reset for non-elim or no-aet/no-pens cases
     if (!isElim || !aet) {
       payload.real_home_score_aet = null;
       payload.real_away_score_aet = null;
@@ -180,13 +187,22 @@ function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: (
       payload.real_home_score_pens = null;
       payload.real_away_score_pens = null;
     }
-    // Confirm teams automatically when admin saves with both teams filled
-    if (isElim && home.trim() && away.trim()) {
-      payload.teams_confirmed = true;
-    }
+    const elimNowConfirmed = isElim && home.trim() !== "" && away.trim() !== "";
+    if (elimNowConfirmed) payload.teams_confirmed = true;
+
     const { error } = await supabase.from("matches").update(payload).eq("id", match.id);
-    if (error) toast.error(error.message);
-    else { toast.success("Match mis à jour"); onSaved(); }
+    if (error) { toast.error(error.message); return; }
+    toast.success("Match mis à jour");
+    onSaved();
+
+    // Déclencheurs push (fire-and-forget)
+    const scoreNowSet = h90 !== "" && a90 !== "";
+    if (!hadScore && scoreNowSet) {
+      notifyEnded({ data: { matchId: match.id } }).catch(() => {});
+    }
+    if (isElim && !wasConfirmed && elimNowConfirmed) {
+      notifyOpen({ data: { matchId: match.id } }).catch(() => {});
+    }
   };
 
   return (

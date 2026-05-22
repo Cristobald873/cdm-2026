@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppNav } from "@/components/AppNav";
 import { Toaster } from "sonner";
+import { usePushSetup } from "@/lib/use-push";
 
 function NotFoundComponent() {
   return (
@@ -85,11 +86,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function PushBootstrap() {
+  usePushSetup();
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PushBootstrap />
         <AppNav />
         <main className="mx-auto max-w-6xl px-4 py-6">
           <Outlet />
