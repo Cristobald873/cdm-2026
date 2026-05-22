@@ -136,8 +136,11 @@ function Page() {
 
 function AdminMatchRow({ match, onSaved, editTeams }: { match: Match; onSaved: () => void; editTeams: boolean }) {
   const isElim = match.stage !== "GROUP";
+  const notifyEnded = useServerFn(notifyMatchEnded);
+  const notifyOpen = useServerFn(notifyElimOpen);
   const [home, setHome] = useState(match.home_team);
   const [away, setAway] = useState(match.away_team);
+
 
   const [h90, setH90] = useState<number | "">(match.real_home_score_90 ?? match.real_home_score ?? "");
   const [a90, setA90] = useState<number | "">(match.real_away_score_90 ?? match.real_away_score ?? "");
