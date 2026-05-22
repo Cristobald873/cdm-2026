@@ -5,6 +5,8 @@ import { useAuth } from "@/lib/auth-context";
 import { GROUP_LETTERS, TEAMS_BY_GROUP, STAGE_LABELS, ALL_TEAMS } from "@/lib/teams";
 import { formatParis } from "@/lib/format";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyMatchEnded, notifyElimOpen } from "@/lib/push.functions";
 
 export const Route = createFileRoute("/admin")({ component: Page });
 
@@ -17,6 +19,7 @@ type Match = {
   real_home_score_pens: number | null; real_away_score_pens: number | null;
   penalty_winner: "home" | "away" | null;
   went_to_aet: boolean; went_to_penalties: boolean;
+  teams_confirmed: boolean;
 };
 
 const STAGES = ["GROUP", "R32", "R16", "QF", "SF", "THIRD", "FINAL"] as const;
