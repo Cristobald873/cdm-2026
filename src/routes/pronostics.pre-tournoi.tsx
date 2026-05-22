@@ -129,7 +129,7 @@ function Page() {
               <div>
                 <Sel label="🏆 Vainqueur du tournoi (15 pts)"
                   value={rows.A?.tournament_winner ?? ""}
-                  onChange={(v) => GROUP_LETTERS.forEach((g) => save(g, { tournament_winner: v }))}
+                  onChange={(v) => save("A", { tournament_winner: v })}
                   options={ALL_TEAMS} disabled={locked} />
                 <OtherLine field="tournament_winner" group="A" />
               </div>
@@ -140,7 +140,7 @@ function Page() {
                     className="w-full rounded-md border border-border bg-input px-3 py-2 outline-none focus:border-primary"
                     value={rows.A?.top_scorer ?? ""}
                     disabled={locked}
-                    onChange={(e) => GROUP_LETTERS.forEach((g) => save(g, { top_scorer: e.target.value }))}
+                    onChange={(e) => save("A", { top_scorer: e.target.value })}
                     placeholder="Ex: Mbappé"
                   />
                 </label>
