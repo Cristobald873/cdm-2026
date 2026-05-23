@@ -13,6 +13,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { AppNav } from "@/components/AppNav";
 import { Toaster } from "sonner";
 import { usePushSetup } from "@/lib/use-push";
+import { IosInstallBanner } from "@/components/IosInstallBanner";
 
 function NotFoundComponent() {
   return (
@@ -101,6 +102,7 @@ function RootComponent() {
         <main className="mx-auto max-w-6xl px-4 py-6">
           <Outlet />
         </main>
+        <IosInstallBanner />
         <Toaster theme="dark" position="top-center" />
       </AuthProvider>
     </QueryClientProvider>

@@ -37,13 +37,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (s?.user) {
         setTimeout(() => loadProfile(s.user.id), 0);
       } else setProfile(null);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      if (data.session?.user) loadProfile(data.session.user.id);
       setLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+        if (data.session?.user) loadProfile(data.session.user.id);
+      })
+      .catch((e) => console.warn("getSession failed", e))
+      .finally(() => setLoading(false));
+    // Safety: never leave the app stuck on loading (e.g. PWA standalone, storage partitioned)
+    const failsafe = setTimeout(() => setLoading(false), 3000);
+    return () => { sub.subscription.unsubscribe(); clearTimeout(failsafe); };
   }, []);
 
   return (
