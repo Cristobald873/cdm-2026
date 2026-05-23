@@ -13,6 +13,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { AppNav } from "@/components/AppNav";
 import { Toaster } from "sonner";
 import { usePushSetup } from "@/lib/use-push";
+import { useSwUpdate } from "@/lib/use-sw-update";
 import { IosInstallBanner } from "@/components/IosInstallBanner";
 
 function NotFoundComponent() {
@@ -89,6 +90,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function PushBootstrap() {
   usePushSetup();
+  useSwUpdate();
   return null;
 }
 

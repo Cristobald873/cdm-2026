@@ -1,15 +1,19 @@
-// Service worker v2 — notifications push uniquement.
+// Service worker v3 — notifications push + stratégie de mise à jour.
 // IMPORTANT: aucun handler `fetch` afin de NE JAMAIS intercepter les requêtes
 // réseau (Supabase, API, navigation). Cela évite que l'app installée (PWA)
 // reste bloquée en mode standalone.
-const SW_VERSION = "v2-2026-05-23";
+//
+// Versioning: change SW_VERSION à chaque release pour forcer le navigateur
+// à détecter un nouveau service worker (byte-diff requis).
+const SW_VERSION = "v3-2026-05-23";
 
 self.addEventListener("install", (e) => {
-  self.skipWaiting();
+  // On laisse la nouvelle version en "waiting" — la page demandera explicitement
+  // SKIP_WAITING après confirmation utilisateur via le toast "Mise à jour".
 });
+
 self.addEventListener("activate", (e) => {
   e.waitUntil((async () => {
-    // Purge tout cache hérité d'une version antérieure
     try {
       const names = await caches.keys();
       await Promise.all(names.map((n) => caches.delete(n)));
@@ -42,7 +46,6 @@ self.addEventListener("notificationclick", (event) => {
   }));
 });
 
-// Permet à la page de demander un skipWaiting immédiat
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
