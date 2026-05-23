@@ -1,6 +1,22 @@
-// Service worker dédié aux notifications push (pas de cache, pas d'offline).
-self.addEventListener("install", (e) => self.skipWaiting());
-self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+// Service worker v2 — notifications push uniquement.
+// IMPORTANT: aucun handler `fetch` afin de NE JAMAIS intercepter les requêtes
+// réseau (Supabase, API, navigation). Cela évite que l'app installée (PWA)
+// reste bloquée en mode standalone.
+const SW_VERSION = "v2-2026-05-23";
+
+self.addEventListener("install", (e) => {
+  self.skipWaiting();
+});
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
+    // Purge tout cache hérité d'une version antérieure
+    try {
+      const names = await caches.keys();
+      await Promise.all(names.map((n) => caches.delete(n)));
+    } catch {}
+    await self.clients.claim();
+  })());
+});
 
 self.addEventListener("push", (event) => {
   let data = {};
@@ -24,4 +40,9 @@ self.addEventListener("notificationclick", (event) => {
     for (const w of wins) { if (w.url.includes(url) && "focus" in w) return w.focus(); }
     if (clients.openWindow) return clients.openWindow(url);
   }));
+});
+
+// Permet à la page de demander un skipWaiting immédiat
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
