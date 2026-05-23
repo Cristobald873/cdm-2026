@@ -102,6 +102,7 @@ function RootComponent() {
         <main className="mx-auto max-w-6xl px-4 py-6">
           <Outlet />
         </main>
+        <IosInstallBanner />
         <Toaster theme="dark" position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
