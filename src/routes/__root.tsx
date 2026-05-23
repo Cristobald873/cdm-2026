@@ -13,6 +13,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { AppNav } from "@/components/AppNav";
 import { Toaster } from "sonner";
 import { usePushSetup } from "@/lib/use-push";
+import { IosInstallBanner } from "@/components/IosInstallBanner";
 
 function NotFoundComponent() {
   return (
