@@ -43,7 +43,8 @@ function Page() {
         {[1, 0, 2].map((idx) => {
           const r = top3[idx];
           if (!r) return <div key={idx} className="flex-1" />;
-          const heights = [120, 160, 90];
+          // idx is the rank-1 (0=1st, 1=2nd, 2=3rd). Tallest = 1st.
+          const heightByRank = [180, 130, 90];
           const medals = ["🥇", "🥈", "🥉"];
           return (
             <div key={r.id} className="flex flex-1 flex-col items-center">
@@ -51,7 +52,7 @@ function Page() {
               <div className="mt-1 text-center font-bold" style={{ color: r.color }}>{r.pseudo}</div>
               <div className="font-display text-2xl text-gold">{r.points} pts</div>
               <div className="mt-2 w-full rounded-t-xl bg-card border border-border flex items-center justify-center text-4xl"
-                style={{ height: heights[idx] }}>
+                style={{ height: heightByRank[idx] }}>
                 {medals[idx]}
               </div>
             </div>
