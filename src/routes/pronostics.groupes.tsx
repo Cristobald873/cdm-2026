@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPredictions } from "@/lib/use-players";
 import { GroupStandings } from "@/components/GroupStandings";
+import { useMatchPredStats } from "@/lib/use-match-stats";
 
 export const Route = createFileRoute("/pronostics/groupes")({ component: Page });
 
