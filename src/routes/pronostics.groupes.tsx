@@ -38,6 +38,9 @@ function Page() {
 
       {!user && <p className="mt-4 rounded-md border border-border bg-card p-3 text-sm text-muted-foreground">Connecte-toi pour pronostiquer.</p>}
 
+      {filter !== "ALL" && <div className="mt-4"><GroupStandings group={filter} matches={data} /></div>}
+
+
       {loading ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {filtered.map((m) => (
