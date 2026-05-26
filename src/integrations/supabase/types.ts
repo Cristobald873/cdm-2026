@@ -313,6 +313,16 @@ export type Database = {
         }
         Returns: number
       }
+      get_match_pred_stats: {
+        Args: never
+        Returns: {
+          away_wins: number
+          draws: number
+          home_wins: number
+          match_id: string
+          total: number
+        }[]
+      }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       pre_tournament_locked: { Args: never; Returns: boolean }
       stage_multiplier: {
