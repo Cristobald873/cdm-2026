@@ -4,8 +4,10 @@ import { Lock, Unlock, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useNow } from "@/lib/use-now";
 import { formatParis, getScoreView, type MatchScoreInput } from "@/lib/format";
+import { PercentBar } from "@/components/PercentBar";
 import { toast } from "sonner";
 import type { PlayerProfile, AnyPrediction } from "@/lib/use-players";
+import type { MatchStat } from "@/lib/use-match-stats";
 
 export type Match = MatchScoreInput & {
   id: string;
@@ -49,11 +51,13 @@ export function MatchCard({
   prediction,
   selectedPlayers,
   predsForMatch,
+  stat,
 }: {
   match: Match;
   prediction?: Prediction | null;
   selectedPlayers?: PlayerProfile[];
   predsForMatch?: AnyPrediction[];
+  stat?: MatchStat;
 }) {
   const { user } = useAuth();
   const now = useNow(30_000);
@@ -154,7 +158,20 @@ export function MatchCard({
         </div>
       )}
 
-      {others.length > 0 && (
+      {!locked && teamsConfirmed && stat && stat.total > 0 && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+            👥 Pronos des joueurs ({stat.total} prono{stat.total > 1 ? "s" : ""})
+          </p>
+          <ul className="space-y-1">
+            <PercentBar label={`${match.home_team} gagne`} count={stat.home_wins} total={stat.total} />
+            <PercentBar label="Match nul" count={stat.draws} total={stat.total} />
+            <PercentBar label={`${match.away_team} gagne`} count={stat.away_wins} total={stat.total} />
+          </ul>
+        </div>
+      )}
+
+      {locked && others.length > 0 && (
         <div className="mt-3 border-t border-border pt-3">
           <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">👁 Pronos des joueurs sélectionnés</p>
           <ul className="space-y-1 text-sm">

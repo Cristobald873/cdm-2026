@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPrePredictions } from "@/lib/use-players";
+import { PercentBar } from "@/components/PercentBar";
 
 export const Route = createFileRoute("/pronostics/pre-tournoi")({ component: Page });
 
@@ -71,7 +72,26 @@ function Page() {
 
   if (!user) return <p className="text-muted-foreground">Connecte-toi pour pronostiquer.</p>;
 
-  const OtherLine = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
+  const Stats = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
+    const counts = new Map<string, number>();
+    let total = 0;
+    allPre.forEach((r) => {
+      if (r.group_letter !== group) return;
+      const v = (r as any)[field];
+      if (!v) return;
+      counts.set(v, (counts.get(v) ?? 0) + 1);
+      total++;
+    });
+    if (total === 0) return <p className="mt-1 text-xs italic text-muted-foreground">Aucun prono pour l'instant</p>;
+    const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+    return (
+      <ul className="mt-1 space-y-0.5">
+        {sorted.map(([team, n]) => <PercentBar key={team} label={team} count={n} total={total} />)}
+      </ul>
+    );
+  };
+
+  const Picks = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
     if (others.length === 0) return null;
     return (
       <ul className="mt-1 space-y-0.5 text-xs">
@@ -87,6 +107,12 @@ function Page() {
         })}
       </ul>
     );
+  };
+
+  const OtherLine = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
+    if (locked) return <Picks field={field} group={group} />;
+    if (field === "top_scorer") return null; // free text, skip stats
+    return <Stats field={field} group={group} />;
   };
 
   return (
