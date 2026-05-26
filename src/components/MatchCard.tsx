@@ -155,7 +155,31 @@ export function MatchCard({
         </div>
       )}
 
-      {others.length > 0 && (
+      {!locked && teamsConfirmed && (predsForMatch?.length ?? 0) > 0 && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+            👥 Pronos des joueurs ({predsForMatch!.length} prono{predsForMatch!.length > 1 ? "s" : ""})
+          </p>
+          {(() => {
+            const total = predsForMatch!.length;
+            let h = 0, d = 0, a = 0;
+            predsForMatch!.forEach((p) => {
+              if (p.pred_home > p.pred_away) h++;
+              else if (p.pred_home < p.pred_away) a++;
+              else d++;
+            });
+            return (
+              <ul className="space-y-1">
+                <PercentBar label={`${match.home_team} gagne`} count={h} total={total} />
+                <PercentBar label="Match nul" count={d} total={total} />
+                <PercentBar label={`${match.away_team} gagne`} count={a} total={total} />
+              </ul>
+            );
+          })()}
+        </div>
+      )}
+
+      {locked && others.length > 0 && (
         <div className="mt-3 border-t border-border pt-3">
           <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">👁 Pronos des joueurs sélectionnés</p>
           <ul className="space-y-1 text-sm">
