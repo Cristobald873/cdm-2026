@@ -46,7 +46,7 @@ function Page() {
       {loading ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {filtered.map((m) => (
-            <MatchCard key={m.id} match={m} prediction={preds[m.id]} selectedPlayers={selectedPlayers} predsForMatch={allPreds.get(m.id)} />
+            <MatchCard key={m.id} match={m} prediction={preds[m.id]} selectedPlayers={selectedPlayers} predsForMatch={allPreds.get(m.id)} stat={stats.get(m.id)} />
           ))}
         </div>
       )}
