@@ -6,6 +6,7 @@ import { GROUP_LETTERS } from "@/lib/teams";
 import { useAuth } from "@/lib/auth-context";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPredictions } from "@/lib/use-players";
+import { GroupStandings } from "@/components/GroupStandings";
 
 export const Route = createFileRoute("/pronostics/groupes")({ component: Page });
 
