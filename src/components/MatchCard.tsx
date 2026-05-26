@@ -7,6 +7,7 @@ import { formatParis, getScoreView, type MatchScoreInput } from "@/lib/format";
 import { PercentBar } from "@/components/PercentBar";
 import { toast } from "sonner";
 import type { PlayerProfile, AnyPrediction } from "@/lib/use-players";
+import type { MatchStat } from "@/lib/use-match-stats";
 
 export type Match = MatchScoreInput & {
   id: string;
