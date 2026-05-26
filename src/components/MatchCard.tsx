@@ -4,6 +4,7 @@ import { Lock, Unlock, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useNow } from "@/lib/use-now";
 import { formatParis, getScoreView, type MatchScoreInput } from "@/lib/format";
+import { PercentBar } from "@/components/PercentBar";
 import { toast } from "sonner";
 import type { PlayerProfile, AnyPrediction } from "@/lib/use-players";
 
