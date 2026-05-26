@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPrePredictions } from "@/lib/use-players";
+import { PercentBar } from "@/components/PercentBar";
 
 export const Route = createFileRoute("/pronostics/pre-tournoi")({ component: Page });
 
