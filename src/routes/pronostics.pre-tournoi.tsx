@@ -109,10 +109,10 @@ function Page() {
     );
   };
 
-  const OtherLine = ({ field, group, options }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string; options: string[] }) => {
+  const OtherLine = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
     if (locked) return <Picks field={field} group={group} />;
     if (field === "top_scorer") return null; // free text, skip stats
-    return <Stats field={field} group={group} options={options} />;
+    return <Stats field={field} group={group} />;
   };
 
   return (
