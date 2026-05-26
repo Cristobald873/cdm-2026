@@ -72,7 +72,7 @@ function Page() {
 
   if (!user) return <p className="text-muted-foreground">Connecte-toi pour pronostiquer.</p>;
 
-  const Stats = ({ field, group, options }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string; options: string[] }) => {
+  const Stats = ({ field, group }: { field: "qualified_1" | "qualified_2" | "tournament_winner" | "top_scorer"; group: string }) => {
     const counts = new Map<string, number>();
     let total = 0;
     allPre.forEach((r) => {
