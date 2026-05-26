@@ -51,11 +51,13 @@ export function MatchCard({
   prediction,
   selectedPlayers,
   predsForMatch,
+  stat,
 }: {
   match: Match;
   prediction?: Prediction | null;
   selectedPlayers?: PlayerProfile[];
   predsForMatch?: AnyPrediction[];
+  stat?: MatchStat;
 }) {
   const { user } = useAuth();
   const now = useNow(30_000);
