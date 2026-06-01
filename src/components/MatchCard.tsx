@@ -158,16 +158,22 @@ export function MatchCard({
         </div>
       )}
 
-      {!locked && teamsConfirmed && stat && stat.total > 0 && (
+      {!locked && teamsConfirmed && (
         <div className="mt-3 border-t border-border pt-3">
-          <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            👥 Pronos des joueurs ({stat.total} prono{stat.total > 1 ? "s" : ""})
-          </p>
-          <ul className="space-y-1">
-            <PercentBar label={`${match.home_team} gagne`} count={stat.home_wins} total={stat.total} />
-            <PercentBar label="Match nul" count={stat.draws} total={stat.total} />
-            <PercentBar label={`${match.away_team} gagne`} count={stat.away_wins} total={stat.total} />
-          </ul>
+          {stat && stat.total > 0 ? (
+            <>
+              <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+                👥 Pronos des joueurs ({stat.total} prono{stat.total > 1 ? "s" : ""})
+              </p>
+              <ul className="space-y-1">
+                <PercentBar label={`${match.home_team} gagne`} count={stat.home_wins} total={stat.total} />
+                <PercentBar label="Match nul" count={stat.draws} total={stat.total} />
+                <PercentBar label={`${match.away_team} gagne`} count={stat.away_wins} total={stat.total} />
+              </ul>
+            </>
+          ) : (
+            <p className="text-xs italic text-muted-foreground">Aucun prono pour l'instant</p>
+          )}
         </div>
       )}
 
