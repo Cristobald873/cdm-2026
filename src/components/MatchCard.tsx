@@ -8,6 +8,7 @@ import { PercentBar } from "@/components/PercentBar";
 import { toast } from "sonner";
 import type { PlayerProfile, AnyPrediction } from "@/lib/use-players";
 import type { MatchStat } from "@/lib/use-match-stats";
+import { MatchComments } from "@/components/MatchComments";
 
 export type Match = MatchScoreInput & {
   id: string;
