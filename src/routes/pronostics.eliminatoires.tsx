@@ -6,6 +6,7 @@ import { STAGE_LABELS } from "@/lib/teams";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPredictions } from "@/lib/use-players";
 import { useMatchPredStats } from "@/lib/use-match-stats";
+import { useMatchCommentCounts } from "@/lib/use-chat";
 
 export const Route = createFileRoute("/pronostics/eliminatoires")({ component: Page });
 
