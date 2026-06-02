@@ -19,6 +19,7 @@ function Page() {
   const { players } = usePlayers();
   const allPreds = useAllPredictions();
   const stats = useMatchPredStats();
+  const commentCounts = useMatchCommentCounts();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const selectedPlayers = players.filter((p) => selected.has(p.id));
