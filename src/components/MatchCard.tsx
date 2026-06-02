@@ -217,6 +217,10 @@ export function MatchCard({
 
       {saving && <div className="mt-2 text-right text-xs text-muted-foreground">Sauvegarde…</div>}
 
+      {commentCount !== undefined && teamsConfirmed && (
+        <MatchComments matchId={match.id} count={commentCount} />
+      )}
+
       {!teamsConfirmed && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-background/85 backdrop-blur-sm">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gold to-amber-700 shadow-lg shadow-gold/30">
