@@ -106,6 +106,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <IosInstallBanner />
+        <ChatBubble />
         <Toaster theme="dark" position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
