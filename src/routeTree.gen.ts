@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ReglesRouteImport } from './routes/regles'
 import { Route as PodiumRouteImport } from './routes/podium'
 import { Route as JoueursRouteImport } from './routes/joueurs'
@@ -23,6 +24,11 @@ import { Route as PronosticsEliminatoiresRouteImport } from './routes/pronostics
 import { Route as ApiPublicCronPretournamentReminderRouteImport } from './routes/api/public/cron/pretournament-reminder'
 import { Route as ApiPublicCronMatchRemindersRouteImport } from './routes/api/public/cron/match-reminders'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReglesRoute = ReglesRouteImport.update({
   id: '/regles',
   path: '/regles',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/joueurs': typeof JoueursRoute
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/joueurs'
     | '/podium'
     | '/regles'
+    | '/reset-password'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/joueurs'
     | '/podium'
     | '/regles'
+    | '/reset-password'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/joueurs'
     | '/podium'
     | '/regles'
+    | '/reset-password'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   JoueursRoute: typeof JoueursRoute
   PodiumRoute: typeof PodiumRoute
   ReglesRoute: typeof ReglesRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
   PronosticsGroupesRoute: typeof PronosticsGroupesRoute
   PronosticsPreTournoiRoute: typeof PronosticsPreTournoiRoute
@@ -203,6 +216,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/regles': {
       id: '/regles'
       path: '/regles'
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoueursRoute: JoueursRoute,
   PodiumRoute: PodiumRoute,
   ReglesRoute: ReglesRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
   PronosticsGroupesRoute: PronosticsGroupesRoute,
   PronosticsPreTournoiRoute: PronosticsPreTournoiRoute,
