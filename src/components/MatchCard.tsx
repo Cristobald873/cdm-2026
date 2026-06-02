@@ -8,6 +8,7 @@ import { PercentBar } from "@/components/PercentBar";
 import { toast } from "sonner";
 import type { PlayerProfile, AnyPrediction } from "@/lib/use-players";
 import type { MatchStat } from "@/lib/use-match-stats";
+import { MatchComments } from "@/components/MatchComments";
 
 export type Match = MatchScoreInput & {
   id: string;
@@ -52,12 +53,14 @@ export function MatchCard({
   selectedPlayers,
   predsForMatch,
   stat,
+  commentCount,
 }: {
   match: Match;
   prediction?: Prediction | null;
   selectedPlayers?: PlayerProfile[];
   predsForMatch?: AnyPrediction[];
   stat?: MatchStat;
+  commentCount?: number;
 }) {
   const { user } = useAuth();
   const now = useNow(30_000);
@@ -213,6 +216,10 @@ export function MatchCard({
       )}
 
       {saving && <div className="mt-2 text-right text-xs text-muted-foreground">Sauvegarde…</div>}
+
+      {commentCount !== undefined && teamsConfirmed && (
+        <MatchComments matchId={match.id} count={commentCount} />
+      )}
 
       {!teamsConfirmed && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-background/85 backdrop-blur-sm">

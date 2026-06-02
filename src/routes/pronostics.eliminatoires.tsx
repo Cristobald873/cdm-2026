@@ -6,6 +6,7 @@ import { STAGE_LABELS } from "@/lib/teams";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { usePlayers, useAllPredictions } from "@/lib/use-players";
 import { useMatchPredStats } from "@/lib/use-match-stats";
+import { useMatchCommentCounts } from "@/lib/use-chat";
 
 export const Route = createFileRoute("/pronostics/eliminatoires")({ component: Page });
 
@@ -18,6 +19,7 @@ function Page() {
   const { players } = usePlayers();
   const allPreds = useAllPredictions();
   const stats = useMatchPredStats();
+  const commentCounts = useMatchCommentCounts();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const selectedPlayers = players.filter((p) => selected.has(p.id));
@@ -40,7 +42,7 @@ function Page() {
 
       {loading ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {data.map((m) => <MatchCard key={m.id} match={m} prediction={preds[m.id]} selectedPlayers={selectedPlayers} predsForMatch={allPreds.get(m.id)} stat={stats.get(m.id)} />)}
+          {data.map((m) => <MatchCard key={m.id} match={m} prediction={preds[m.id]} selectedPlayers={selectedPlayers} predsForMatch={allPreds.get(m.id)} stat={stats.get(m.id)} commentCount={commentCounts.get(m.id) ?? 0} />)}
         </div>
       )}
     </section>

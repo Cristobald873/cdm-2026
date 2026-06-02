@@ -15,6 +15,7 @@ import { Toaster } from "sonner";
 import { usePushSetup } from "@/lib/use-push";
 import { useSwUpdate } from "@/lib/use-sw-update";
 import { IosInstallBanner } from "@/components/IosInstallBanner";
+import { ChatBubble } from "@/components/ChatBubble";
 
 function NotFoundComponent() {
   return (
@@ -105,6 +106,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <IosInstallBanner />
+        <ChatBubble />
         <Toaster theme="dark" position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
