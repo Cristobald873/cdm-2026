@@ -53,12 +53,14 @@ export function MatchCard({
   selectedPlayers,
   predsForMatch,
   stat,
+  commentCount,
 }: {
   match: Match;
   prediction?: Prediction | null;
   selectedPlayers?: PlayerProfile[];
   predsForMatch?: AnyPrediction[];
   stat?: MatchStat;
+  commentCount?: number;
 }) {
   const { user } = useAuth();
   const now = useNow(30_000);
