@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { subscribeRealtime } from "@/lib/realtime-bus";
 import type { Match, Prediction } from "@/components/MatchCard";
 
 export function useMatchesByStage(stage: string | string[]) {
@@ -11,20 +12,17 @@ export function useMatchesByStage(stage: string | string[]) {
     supabase.from("matches").select("*").in("stage", stages as any).order("kickoff_at").then(({ data: d }) => {
       if (mounted) { setData((d as Match[]) ?? []); setLoading(false); }
     });
-    const ch = supabase.channel("matches-" + stages.join("-")).on("postgres_changes",
-      { event: "*", schema: "public", table: "matches" },
-      (payload) => {
-        const row = (payload.new ?? payload.old) as Match;
-        if (!stages.includes(row.stage)) return;
-        setData((prev) => {
-          if (payload.eventType === "DELETE") return prev.filter((m) => m.id !== row.id);
-          const idx = prev.findIndex((m) => m.id === row.id);
-          if (idx === -1) return [...prev, payload.new as Match].sort((a, b) => a.kickoff_at.localeCompare(b.kickoff_at));
-          const copy = [...prev]; copy[idx] = payload.new as Match; return copy;
-        });
-      }
-    ).subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("matches", (payload) => {
+      const row = (payload.new ?? payload.old) as Match;
+      if (!row || !stages.includes(row.stage)) return;
+      setData((prev) => {
+        if (payload.eventType === "DELETE") return prev.filter((m) => m.id !== row.id);
+        const idx = prev.findIndex((m) => m.id === row.id);
+        if (idx === -1) return [...prev, payload.new as Match].sort((a, b) => a.kickoff_at.localeCompare(b.kickoff_at));
+        const copy = [...prev]; copy[idx] = payload.new as Match; return copy;
+      });
+    });
+    return () => { mounted = false; unsub(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stages.join(",")]);
   return { data, loading };
@@ -44,10 +42,8 @@ export function useMyPredictions() {
       setMap(m);
     };
     load();
-    const ch = supabase.channel("my-preds").on("postgres_changes",
-      { event: "*", schema: "public", table: "predictions" }, () => load()
-    ).subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("predictions", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return map;
 }

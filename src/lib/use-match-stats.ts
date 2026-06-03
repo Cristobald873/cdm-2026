@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { subscribeRealtime } from "@/lib/realtime-bus";
 
 export type MatchStat = { home_wins: number; draws: number; away_wins: number; total: number };
 
@@ -17,11 +18,9 @@ export function useMatchPredStats() {
       setMap(m);
     };
     load();
-    const ch = supabase
-      .channel("pred-stats")
-      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, load)
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("predictions", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return map;
 }
+

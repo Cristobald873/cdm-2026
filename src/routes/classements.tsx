@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { subscribeRealtime } from "@/lib/realtime-bus";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/classements")({ component: Page });
@@ -51,13 +52,13 @@ function Page() {
 
   useEffect(() => {
     reload();
-    const ch = supabase.channel("ranks")
-      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "pre_tournament_predictions" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, reload)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    const unsubs = [
+      subscribeRealtime("predictions", reload),
+      subscribeRealtime("matches", reload),
+      subscribeRealtime("pre_tournament_predictions", reload),
+      subscribeRealtime("profiles", reload),
+    ];
+    return () => { unsubs.forEach((u) => u()); };
   }, []);
 
   const ranking = useMemo(() => {
