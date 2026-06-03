@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { subscribeRealtime } from "@/lib/realtime-bus";
 
 export type PlayerProfile = {
   id: string;
@@ -41,11 +42,8 @@ export function usePlayers() {
       setLoading(false);
     };
     load();
-    const ch = supabase
-      .channel("players")
-      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, load)
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("profiles", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return { players, loading };
 }
@@ -68,11 +66,8 @@ export function useAllPredictions() {
       setByMatch(m);
     };
     load();
-    const ch = supabase
-      .channel("all-preds")
-      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, load)
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("predictions", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return byMatch;
 }
@@ -89,11 +84,9 @@ export function useAllPrePredictions() {
       setList((data as PrePred[]) ?? []);
     };
     load();
-    const ch = supabase
-      .channel("all-prepreds")
-      .on("postgres_changes", { event: "*", schema: "public", table: "pre_tournament_predictions" }, load)
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("pre_tournament_predictions", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return list;
 }
+
