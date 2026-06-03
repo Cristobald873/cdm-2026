@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { subscribeRealtime } from "@/lib/realtime-bus";
 
 export type ChatMessage = {
   id: string;
@@ -24,25 +25,18 @@ export function useChatMessages(matchId: string | null) {
       setLoading(false);
     };
     load();
-    const ch = supabase
-      .channel(`chat-${matchId ?? "global"}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "chat_messages" },
-        (payload) => {
-          const row = (payload.new ?? payload.old) as ChatMessage | undefined;
-          if (!row) return;
-          const belongs = matchId === null ? row.match_id === null : row.match_id === matchId;
-          if (!belongs) return;
-          if (payload.eventType === "INSERT") {
-            setMessages((prev) => [...prev, payload.new as ChatMessage]);
-          } else if (payload.eventType === "DELETE") {
-            setMessages((prev) => prev.filter((m) => m.id !== (payload.old as ChatMessage).id));
-          }
-        }
-      )
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("chat_messages", (payload) => {
+      const row = (payload.new ?? payload.old) as ChatMessage | undefined;
+      if (!row) return;
+      const belongs = matchId === null ? row.match_id === null : row.match_id === matchId;
+      if (!belongs) return;
+      if (payload.eventType === "INSERT") {
+        setMessages((prev) => [...prev, payload.new as ChatMessage]);
+      } else if (payload.eventType === "DELETE") {
+        setMessages((prev) => prev.filter((m) => m.id !== (payload.old as ChatMessage).id));
+      }
+    });
+    return () => { mounted = false; unsub(); };
   }, [matchId]);
 
   const send = useCallback(async (userId: string, content: string) => {
@@ -78,14 +72,12 @@ export function useMatchCommentCounts() {
       setCounts(m);
     };
     load();
-    const ch = supabase
-      .channel("chat-counts")
-      .on("postgres_changes", { event: "*", schema: "public", table: "chat_messages" }, load)
-      .subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
+    const unsub = subscribeRealtime("chat_messages", () => load());
+    return () => { mounted = false; unsub(); };
   }, []);
   return counts;
 }
+
 
 // Global unread counter using localStorage last-seen timestamp
 const LAST_SEEN_KEY = "chat_global_last_seen_at";
