@@ -24,13 +24,13 @@ function Page() {
       setList(rows);
     };
     reload();
-    const ch = supabase.channel("podium")
-      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "pre_tournament_predictions" }, reload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, reload)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    const unsubs = [
+      subscribeRealtime("predictions", reload),
+      subscribeRealtime("matches", reload),
+      subscribeRealtime("pre_tournament_predictions", reload),
+      subscribeRealtime("profiles", reload),
+    ];
+    return () => { unsubs.forEach((u) => u()); };
   }, []);
 
   const top3 = list.slice(0, 3);
