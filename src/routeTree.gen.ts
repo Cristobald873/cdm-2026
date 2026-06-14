@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StatsRouteImport } from './routes/stats'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ReglesRouteImport } from './routes/regles'
 import { Route as PodiumRouteImport } from './routes/podium'
@@ -24,6 +25,11 @@ import { Route as PronosticsEliminatoiresRouteImport } from './routes/pronostics
 import { Route as ApiPublicCronPretournamentReminderRouteImport } from './routes/api/public/cron/pretournament-reminder'
 import { Route as ApiPublicCronMatchRemindersRouteImport } from './routes/api/public/cron/match-reminders'
 
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/stats': typeof StatsRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/stats': typeof StatsRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/podium': typeof PodiumRoute
   '/regles': typeof ReglesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/stats': typeof StatsRoute
   '/pronostics/eliminatoires': typeof PronosticsEliminatoiresRoute
   '/pronostics/groupes': typeof PronosticsGroupesRoute
   '/pronostics/pre-tournoi': typeof PronosticsPreTournoiRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/podium'
     | '/regles'
     | '/reset-password'
+    | '/stats'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/podium'
     | '/regles'
     | '/reset-password'
+    | '/stats'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/podium'
     | '/regles'
     | '/reset-password'
+    | '/stats'
     | '/pronostics/eliminatoires'
     | '/pronostics/groupes'
     | '/pronostics/pre-tournoi'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   PodiumRoute: typeof PodiumRoute
   ReglesRoute: typeof ReglesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  StatsRoute: typeof StatsRoute
   PronosticsEliminatoiresRoute: typeof PronosticsEliminatoiresRoute
   PronosticsGroupesRoute: typeof PronosticsGroupesRoute
   PronosticsPreTournoiRoute: typeof PronosticsPreTournoiRoute
@@ -216,6 +229,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   PodiumRoute: PodiumRoute,
   ReglesRoute: ReglesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  StatsRoute: StatsRoute,
   PronosticsEliminatoiresRoute: PronosticsEliminatoiresRoute,
   PronosticsGroupesRoute: PronosticsGroupesRoute,
   PronosticsPreTournoiRoute: PronosticsPreTournoiRoute,

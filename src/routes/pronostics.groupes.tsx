@@ -9,6 +9,7 @@ import { usePlayers, useAllPredictions } from "@/lib/use-players";
 import { GroupStandings } from "@/components/GroupStandings";
 import { useMatchPredStats } from "@/lib/use-match-stats";
 import { useMatchCommentCounts } from "@/lib/use-chat";
+import { getScoreView } from "@/lib/format";
 
 export const Route = createFileRoute("/pronostics/groupes")({ component: Page });
 
@@ -24,7 +25,14 @@ function Page() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const selectedPlayers = players.filter((p) => selected.has(p.id));
-  const filtered = filter === "ALL" ? data : data.filter((m) => m.group_letter === filter);
+  const filtered = (filter === "ALL" ? data : data.filter((m) => m.group_letter === filter))
+    .slice()
+    .sort((a, b) => {
+      const aDone = getScoreView(a) !== null ? 1 : 0;
+      const bDone = getScoreView(b) !== null ? 1 : 0;
+      if (aDone !== bDone) return aDone - bDone;
+      return a.kickoff_at.localeCompare(b.kickoff_at);
+    });
 
   return (
     <section>

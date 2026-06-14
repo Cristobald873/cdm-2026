@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
-import { Trophy, ListChecks, Sparkles, Swords, Medal, BookOpen, Shield, LogOut, Menu, X, Users } from "lucide-react";
+import { Trophy, ListChecks, Sparkles, Swords, Medal, BookOpen, Shield, LogOut, Menu, X, Users, TrendingUp } from "lucide-react";
 import { useState } from "react";
 
 const NAV = [
@@ -10,6 +10,7 @@ const NAV = [
   { to: "/pronostics/pre-tournoi", label: "Qualifications", icon: Sparkles },
   { to: "/joueurs", label: "Joueurs", icon: Users },
   { to: "/classements", label: "Classements", icon: Trophy },
+  { to: "/stats", label: "Stats", icon: TrendingUp },
   { to: "/podium", label: "Podium", icon: Medal },
   { to: "/regles", label: "Règles", icon: BookOpen },
 ] as const;
