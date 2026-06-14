@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Lock, Unlock, CheckCircle2, ShieldAlert } from "lucide-react";
+import { Lock, Unlock, CheckCircle2, ShieldAlert, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useNow } from "@/lib/use-now";
 import { formatParis, getScoreView, type MatchScoreInput } from "@/lib/format";
