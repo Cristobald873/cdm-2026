@@ -82,7 +82,11 @@ export function MatchCard({
   const [home, setHome] = useState<number | "">(prediction?.pred_home ?? "");
   const [away, setAway] = useState<number | "">(prediction?.pred_away ?? "");
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const initialRef = useRef(true);
+
+  const isPlayed = score !== null;
+  const showFull = !isPlayed || expanded;
 
   useEffect(() => {
     setHome(prediction?.pred_home ?? "");
@@ -97,6 +101,14 @@ export function MatchCard({
     setSaving(true);
     const t = setTimeout(async () => {
       const { error } = await supabase.from("predictions").upsert(
+        { user_id: user.id, match_id: match.id, pred_home: Number(home), pred_away: Number(away) },
+        { onConflict: "user_id,match_id" }
+      );
+      setSaving(false);
+      if (error) toast.error(error.message.includes("row-level") ? "Match verrouillé" : "Erreur de sauvegarde");
+    }, 800);
+    return () => clearTimeout(t);
+  }, [home, away, user, locked, teamsConfirmed, match.id]);
         { user_id: user.id, match_id: match.id, pred_home: Number(home), pred_away: Number(away) },
         { onConflict: "user_id,match_id" }
       );
