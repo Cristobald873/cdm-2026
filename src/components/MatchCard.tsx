@@ -109,14 +109,6 @@ export function MatchCard({
     }, 800);
     return () => clearTimeout(t);
   }, [home, away, user, locked, teamsConfirmed, match.id]);
-        { user_id: user.id, match_id: match.id, pred_home: Number(home), pred_away: Number(away) },
-        { onConflict: "user_id,match_id" }
-      );
-      setSaving(false);
-      if (error) toast.error(error.message.includes("row-level") ? "Match verrouillé" : "Erreur de sauvegarde");
-    }, 800);
-    return () => clearTimeout(t);
-  }, [home, away, user, locked, teamsConfirmed, match.id]);
 
   const others = (selectedPlayers ?? []).filter((p) => p.id !== user?.id);
   const predsByUser = new Map((predsForMatch ?? []).map((p) => [p.user_id, p]));
