@@ -86,7 +86,6 @@ export function MatchCard({
   const initialRef = useRef(true);
 
   const isPlayed = score !== null;
-  const showFull = !isPlayed || expanded;
 
   useEffect(() => {
     setHome(prediction?.pred_home ?? "");
