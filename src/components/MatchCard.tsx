@@ -113,116 +113,152 @@ export function MatchCard({
   const others = (selectedPlayers ?? []).filter((p) => p.id !== user?.id);
   const predsByUser = new Map((predsForMatch ?? []).map((p) => [p.user_id, p]));
 
+  const toggleBtn = isPlayed ? (
+    <button
+      type="button"
+      onClick={() => setExpanded((e) => !e)}
+      className="chip bg-result/20 text-result hover:bg-result/30"
+      aria-label={expanded ? "Replier" : "Déplier"}
+    >
+      <CheckCircle2 className="h-3 w-3" />Résultat
+      <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
+    </button>
+  ) : !teamsConfirmed ? (
+    <span className="chip bg-locked/20 text-locked"><ShieldAlert className="h-3 w-3" />Fermé</span>
+  ) : locked ? (
+    <span className="chip bg-locked/20 text-locked"><Lock className="h-3 w-3" />Verrouillé</span>
+  ) : (
+    <span className="chip bg-success/20 text-success"><Unlock className="h-3 w-3" />Ouvert</span>
+  );
+
   return (
     <div className="relative rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/40">
       <div className="mb-3 flex items-center justify-between text-xs">
         <span className="text-muted-foreground">
           {formatParis(match.kickoff_at)} <span className="opacity-60">(Paris)</span>
         </span>
-        {score ? (
-          <span className="chip bg-result/20 text-result"><CheckCircle2 className="h-3 w-3" />Résultat</span>
-        ) : !teamsConfirmed ? (
-          <span className="chip bg-locked/20 text-locked"><ShieldAlert className="h-3 w-3" />Fermé</span>
-        ) : locked ? (
-          <span className="chip bg-locked/20 text-locked"><Lock className="h-3 w-3" />Verrouillé</span>
-        ) : (
-          <span className="chip bg-success/20 text-success"><Unlock className="h-3 w-3" />Ouvert</span>
-        )}
+        {toggleBtn}
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div className={`text-right font-semibold ${winnerSide === "home" ? "text-gold" : ""}`}>{match.home_team}</div>
-        <div className="flex items-center gap-2">
-          <ScoreInput value={home} onChange={setHome} disabled={locked || !user || !teamsConfirmed} />
-          <span className="font-display text-xl text-muted-foreground">:</span>
-          <ScoreInput value={away} onChange={setAway} disabled={locked || !user || !teamsConfirmed} />
-        </div>
-        <div className={`font-semibold ${winnerSide === "away" ? "text-gold" : ""}`}>{match.away_team}</div>
-      </div>
-
-      {score && (
-        <div className="mt-3 flex flex-col items-center gap-1 border-t border-border pt-3 text-sm">
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground">Score réel</span>
-            <span className="font-display text-2xl text-result">
-              {score.homeMain} - {score.awayMain}
-              {score.suffix && <span className="ml-2 text-base text-muted-foreground">{score.suffix}</span>}
-            </span>
-            {prediction?.points_earned !== null && prediction?.points_earned !== undefined && (
+      {isPlayed && !expanded ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 text-left"
+        >
+          <div className={`text-right font-semibold ${winnerSide === "home" ? "text-gold" : ""}`}>{match.home_team}</div>
+          <div className="flex items-center gap-2">
+            <span className="font-display text-3xl text-result">{score!.homeMain}</span>
+            <span className="font-display text-xl text-muted-foreground">:</span>
+            <span className="font-display text-3xl text-result">{score!.awayMain}</span>
+            {score!.suffix && <span className="ml-1 text-xs text-muted-foreground">{score!.suffix}</span>}
+          </div>
+          <div className={`font-semibold ${winnerSide === "away" ? "text-gold" : ""}`}>{match.away_team}</div>
+          {prediction?.points_earned !== null && prediction?.points_earned !== undefined && (
+            <div className="col-span-3 mt-2 flex justify-center">
               <span className={`chip ${prediction.points_earned > 0 ? "bg-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                 +{prediction.points_earned} pts
               </span>
-            )}
-          </div>
-          {score.pens && (
-            <div className="text-xs font-semibold text-orange-400">
-              ⚽ TAB&nbsp;{score.pens.home} – {score.pens.away}
-              <span className="ml-2 text-muted-foreground">
-                · {score.pens.winner === "home" ? match.home_team : match.away_team} qualifié
-              </span>
             </div>
           )}
-        </div>
-      )}
+        </button>
+      ) : (
+        <>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div className={`text-right font-semibold ${winnerSide === "home" ? "text-gold" : ""}`}>{match.home_team}</div>
+            <div className="flex items-center gap-2">
+              <ScoreInput value={home} onChange={setHome} disabled={locked || !user || !teamsConfirmed} />
+              <span className="font-display text-xl text-muted-foreground">:</span>
+              <ScoreInput value={away} onChange={setAway} disabled={locked || !user || !teamsConfirmed} />
+            </div>
+            <div className={`font-semibold ${winnerSide === "away" ? "text-gold" : ""}`}>{match.away_team}</div>
+          </div>
 
-      {!locked && teamsConfirmed && (
-        <div className="mt-3 border-t border-border pt-3">
-          {stat && stat.total > 0 ? (
-            <>
-              <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-                👥 Pronos des joueurs ({stat.total} prono{stat.total > 1 ? "s" : ""})
-              </p>
-              <ul className="space-y-1">
-                <PercentBar label={`${match.home_team} gagne`} count={stat.home_wins} total={stat.total} />
-                <PercentBar label="Match nul" count={stat.draws} total={stat.total} />
-                <PercentBar label={`${match.away_team} gagne`} count={stat.away_wins} total={stat.total} />
-              </ul>
-            </>
-          ) : (
-            <p className="text-xs italic text-muted-foreground">Aucun prono pour l'instant</p>
+          {score && (
+            <div className="mt-3 flex flex-col items-center gap-1 border-t border-border pt-3 text-sm">
+              <div className="flex items-center gap-3">
+                <span className="text-muted-foreground">Score réel</span>
+                <span className="font-display text-2xl text-result">
+                  {score.homeMain} - {score.awayMain}
+                  {score.suffix && <span className="ml-2 text-base text-muted-foreground">{score.suffix}</span>}
+                </span>
+                {prediction?.points_earned !== null && prediction?.points_earned !== undefined && (
+                  <span className={`chip ${prediction.points_earned > 0 ? "bg-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                    +{prediction.points_earned} pts
+                  </span>
+                )}
+              </div>
+              {score.pens && (
+                <div className="text-xs font-semibold text-orange-400">
+                  ⚽ TAB&nbsp;{score.pens.home} – {score.pens.away}
+                  <span className="ml-2 text-muted-foreground">
+                    · {score.pens.winner === "home" ? match.home_team : match.away_team} qualifié
+                  </span>
+                </div>
+              )}
+            </div>
           )}
-        </div>
-      )}
 
-      {locked && others.length > 0 && (
-        <div className="mt-3 border-t border-border pt-3">
-          <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">👁 Pronos des joueurs sélectionnés</p>
-          <ul className="space-y-1 text-sm">
-            {others.map((p) => {
-              const pr = predsByUser.get(p.id);
-              if (!pr) {
-                return (
-                  <li key={p.id} className="flex items-center gap-2 text-muted-foreground">
-                    <span>—</span><span>{p.avatar}</span>
-                    <span style={{ color: p.color }}>{p.pseudo}</span>
-                    <span className="ml-auto text-xs italic">pas de prono</span>
-                  </li>
-                );
-              }
-              let badge: React.ReactNode = null;
-              if (score && pr.points_earned !== null) {
-                const exact = pr.pred_home === score.homeMain && pr.pred_away === score.awayMain;
-                if (exact) badge = <span className="chip bg-gold text-primary-foreground">🎯 +{pr.points_earned} pts</span>;
-                else if (pr.points_earned > 0) badge = <span className="chip bg-success/20 text-success">✅ +{pr.points_earned} pts</span>;
-                else badge = <span className="chip bg-muted text-muted-foreground">❌ 0 pt</span>;
-              }
-              return (
-                <li key={p.id} className="flex items-center gap-2">
-                  <span>{p.avatar}</span>
-                  <span style={{ color: p.color }} className="font-medium">{p.pseudo}</span>
-                  <span className="ml-auto font-display text-lg">{pr.pred_home} — {pr.pred_away}</span>
-                  {badge}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+          {!locked && teamsConfirmed && (
+            <div className="mt-3 border-t border-border pt-3">
+              {stat && stat.total > 0 ? (
+                <>
+                  <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+                    👥 Pronos des joueurs ({stat.total} prono{stat.total > 1 ? "s" : ""})
+                  </p>
+                  <ul className="space-y-1">
+                    <PercentBar label={`${match.home_team} gagne`} count={stat.home_wins} total={stat.total} />
+                    <PercentBar label="Match nul" count={stat.draws} total={stat.total} />
+                    <PercentBar label={`${match.away_team} gagne`} count={stat.away_wins} total={stat.total} />
+                  </ul>
+                </>
+              ) : (
+                <p className="text-xs italic text-muted-foreground">Aucun prono pour l'instant</p>
+              )}
+            </div>
+          )}
 
-      {saving && <div className="mt-2 text-right text-xs text-muted-foreground">Sauvegarde…</div>}
+          {locked && others.length > 0 && (
+            <div className="mt-3 border-t border-border pt-3">
+              <p className="mb-1.5 text-xs uppercase tracking-wide text-muted-foreground">👁 Pronos des joueurs sélectionnés</p>
+              <ul className="space-y-1 text-sm">
+                {others.map((p) => {
+                  const pr = predsByUser.get(p.id);
+                  if (!pr) {
+                    return (
+                      <li key={p.id} className="flex items-center gap-2 text-muted-foreground">
+                        <span>—</span><span>{p.avatar}</span>
+                        <span style={{ color: p.color }}>{p.pseudo}</span>
+                        <span className="ml-auto text-xs italic">pas de prono</span>
+                      </li>
+                    );
+                  }
+                  let badge: React.ReactNode = null;
+                  if (score && pr.points_earned !== null) {
+                    const exact = pr.pred_home === score.homeMain && pr.pred_away === score.awayMain;
+                    if (exact) badge = <span className="chip bg-gold text-primary-foreground">🎯 +{pr.points_earned} pts</span>;
+                    else if (pr.points_earned > 0) badge = <span className="chip bg-success/20 text-success">✅ +{pr.points_earned} pts</span>;
+                    else badge = <span className="chip bg-muted text-muted-foreground">❌ 0 pt</span>;
+                  }
+                  return (
+                    <li key={p.id} className="flex items-center gap-2">
+                      <span>{p.avatar}</span>
+                      <span style={{ color: p.color }} className="font-medium">{p.pseudo}</span>
+                      <span className="ml-auto font-display text-lg">{pr.pred_home} — {pr.pred_away}</span>
+                      {badge}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
 
-      {commentCount !== undefined && teamsConfirmed && (
-        <MatchComments matchId={match.id} count={commentCount} />
+          {saving && <div className="mt-2 text-right text-xs text-muted-foreground">Sauvegarde…</div>}
+
+          {commentCount !== undefined && teamsConfirmed && (
+            <MatchComments matchId={match.id} count={commentCount} />
+          )}
+        </>
       )}
 
       {!teamsConfirmed && (
@@ -237,3 +273,4 @@ export function MatchCard({
     </div>
   );
 }
+
