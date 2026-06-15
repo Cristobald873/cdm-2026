@@ -22,6 +22,8 @@ function Page() {
   const commentCounts = useMatchCommentCounts();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const selectAll = () => setSelected(new Set(players.map((p) => p.id)));
+  const deselectAll = () => setSelected(new Set());
   const selectedPlayers = players.filter((p) => selected.has(p.id));
 
   return (
