@@ -41,7 +41,7 @@ function Page() {
       <h1 className="font-display text-4xl text-gold">Phase de groupes</h1>
       <p className="text-sm text-muted-foreground">Sauvegarde automatique. Verrouillage au coup d'envoi.</p>
 
-      <PlayerSelector players={players} selected={selected} onToggle={toggle} />
+      <PlayerSelector players={players} selected={selected} onToggle={toggle} onSelectAll={selectAll} onDeselectAll={deselectAll} />
 
       <div className="mt-4 flex flex-wrap gap-1">
         <Btn active={filter === "ALL"} onClick={() => setFilter("ALL")}>Tous</Btn>
