@@ -286,7 +286,7 @@ function Page() {
                   type="category"
                   dataKey="name"
                   stroke="hsl(var(--muted-foreground))"
-                  tick={{ fontSize: 13, fill: "hsl(var(--foreground))" }}
+                  tick={{ fontSize: 13, fill: "#ffffff" }}
                   width={140}
                   tickLine={false}
                 />
