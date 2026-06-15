@@ -31,7 +31,7 @@ function Page() {
       <h1 className="font-display text-4xl text-gold">Éliminatoires</h1>
       <p className="text-sm text-muted-foreground">Points × 2. Les équipes seront mises à jour par l'admin.</p>
 
-      <PlayerSelector players={players} selected={selected} onToggle={toggle} />
+      <PlayerSelector players={players} selected={selected} onToggle={toggle} onSelectAll={selectAll} onDeselectAll={deselectAll} />
 
       <div className="mt-4 flex flex-wrap gap-1">
         {STAGES.map((s) => (
