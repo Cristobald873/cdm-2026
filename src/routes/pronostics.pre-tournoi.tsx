@@ -125,7 +125,7 @@ function Page() {
       </div>
       <p className="text-sm text-muted-foreground">Verrouillage le 11 juin 2026 à 21h (Paris).</p>
 
-      <PlayerSelector players={players} selected={selected} onToggle={toggle} />
+      <PlayerSelector players={players} selected={selected} onToggle={toggle} onSelectAll={selectAll} onDeselectAll={deselectAll} />
 
       {!loaded ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <>
