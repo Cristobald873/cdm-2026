@@ -23,6 +23,8 @@ function Page() {
   const allPre = useAllPrePredictions();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const selectAll = () => setSelected(new Set(players.map((p) => p.id)));
+  const deselectAll = () => setSelected(new Set());
   const others = players.filter((p) => selected.has(p.id) && p.id !== user?.id);
 
   const preByUserGroup = useMemo(() => {
@@ -123,7 +125,7 @@ function Page() {
       </div>
       <p className="text-sm text-muted-foreground">Verrouillage le 11 juin 2026 à 21h (Paris).</p>
 
-      <PlayerSelector players={players} selected={selected} onToggle={toggle} />
+      <PlayerSelector players={players} selected={selected} onToggle={toggle} onSelectAll={selectAll} onDeselectAll={deselectAll} />
 
       {!loaded ? <p className="mt-6 text-muted-foreground">Chargement…</p> : (
         <>

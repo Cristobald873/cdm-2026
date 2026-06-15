@@ -7,13 +7,16 @@ type Props = {
   players: PlayerProfile[];
   selected: Set<string>;
   onToggle: (id: string) => void;
+  onSelectAll?: () => void;
+  onDeselectAll?: () => void;
 };
 
-export function PlayerSelector({ players, selected, onToggle }: Props) {
+export function PlayerSelector({ players, selected, onToggle, onSelectAll, onDeselectAll }: Props) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   if (players.length === 0) return null;
   const selectedCount = Array.from(selected).filter((id) => id !== user?.id).length;
+  const allSelected = players.length > 0 && players.every((p) => selected.has(p.id));
 
   return (
     <div className="mt-4">
@@ -31,7 +34,22 @@ export function PlayerSelector({ players, selected, onToggle }: Props) {
         <ChevronRight className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} />
       </button>
       {open && (
-        <div className="mt-2 rounded-xl border border-border bg-card p-3">
+        <div className="mt-2 rounded-xl border border-border bg-card p-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (allSelected) {
+                  onDeselectAll?.();
+                } else {
+                  onSelectAll?.();
+                }
+              }}
+              className="rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition"
+            >
+              {allSelected ? "Tout désélectionner" : "Tout sélectionner"}
+            </button>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {players.map((p) => {
               const isMe = p.id === user?.id;
