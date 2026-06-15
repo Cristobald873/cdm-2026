@@ -269,7 +269,7 @@ function Page() {
         {visibleProfiles.length === 0 ? (
           <p className="text-sm italic text-muted-foreground">Sélectionne au moins un joueur.</p>
         ) : (
-          <div className="w-full" style={{ height: Math.max(160, visibleProfiles.length * 40) }}>
+          <div className="w-full" style={{ height: Math.max(200, visibleProfiles.length * 48) }}>
             <ResponsiveContainer>
               <BarChart
                 layout="vertical"
@@ -278,13 +278,20 @@ function Page() {
                   goals: perPlayer.get(p.id)?.goals ?? 0,
                   fill: p.color,
                 }))}
-                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
               >
                 <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  stroke="hsl(var(--muted-foreground))"
+                  tick={{ fontSize: 13, fill: "hsl(var(--foreground))" }}
+                  width={140}
+                  tickLine={false}
+                />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="goals" radius={[0, 4, 4, 0]}>
+                <Bar dataKey="goals" radius={[0, 4, 4, 0]} barSize={28}>
                   {visibleProfiles.map((p) => <Cell key={p.id} fill={p.color} />)}
                 </Bar>
               </BarChart>
