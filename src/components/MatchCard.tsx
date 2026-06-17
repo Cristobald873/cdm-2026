@@ -132,10 +132,15 @@ export function MatchCard({
 
   return (
     <div className="relative rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/40">
-      <div className="mb-3 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">
-          {formatParis(match.kickoff_at)} <span className="opacity-60">(Paris)</span>
-        </span>
+      <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+        <div className="flex min-w-0 items-center gap-2">
+          {match.group_letter && (
+            <span className="chip bg-secondary text-muted-foreground">Groupe {match.group_letter}</span>
+          )}
+          <span className="truncate text-muted-foreground">
+            {formatParis(match.kickoff_at)} <span className="opacity-60">(Paris)</span>
+          </span>
+        </div>
         {toggleBtn}
       </div>
 
