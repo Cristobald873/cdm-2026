@@ -53,12 +53,27 @@ export function useAllPredictions() {
   useEffect(() => {
     let mounted = true;
     const load = async () => {
-      const { data } = await supabase
-        .from("predictions")
-        .select("user_id,match_id,pred_home,pred_away,points_earned");
+      const pageSize = 1000;
+      let from = 0;
+      const rows: AnyPrediction[] = [];
+
+      while (mounted) {
+        const { data, error } = await supabase
+          .from("predictions")
+          .select("user_id,match_id,pred_home,pred_away,points_earned")
+          .order("match_id", { ascending: true })
+          .order("user_id", { ascending: true })
+          .range(from, from + pageSize - 1);
+
+        if (error || !data || data.length === 0) break;
+        rows.push(...(data as AnyPrediction[]));
+        if (data.length < pageSize) break;
+        from += pageSize;
+      }
+
       if (!mounted) return;
       const m = new Map<string, AnyPrediction[]>();
-      ((data as AnyPrediction[]) ?? []).forEach((p) => {
+      rows.forEach((p) => {
         const arr = m.get(p.match_id) ?? [];
         arr.push(p);
         m.set(p.match_id, arr);
