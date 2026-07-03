@@ -29,6 +29,23 @@ const TAB_DESCRIPTIONS: Record<typeof TABS[number]["k"], string> = {
   loose: "Le classement inversé. Trié du moins bon au meilleur. Celui qui finit en tête ici a une tournée à offrir.",
 };
 
+const fetchAllPredictions = async () => {
+  const pageSize = 1000;
+  let from = 0;
+  const rows: any[] = [];
+  while (true) {
+    const { data, error } = await supabase
+      .from("predictions")
+      .select("user_id,match_id,pred_home,pred_away,points_earned")
+      .range(from, from + pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    rows.push(...data);
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+  return rows;
+};
+
 function Page() {
   const { user } = useAuth();
   const [tab, setTab] = useState<typeof TABS[number]["k"]>("general");
@@ -38,9 +55,9 @@ function Page() {
   const [matches, setMatches] = useState<Map<string, Match>>(new Map());
 
   const reload = async () => {
-    const [{ data: p }, { data: pr }, { data: pt }, { data: ms }] = await Promise.all([
+    const [{ data: p }, pr, { data: pt }, { data: ms }] = await Promise.all([
       supabase.from("profiles").select("id,pseudo,avatar,color"),
-      supabase.from("predictions").select("user_id,match_id,pred_home,pred_away,points_earned"),
+      fetchAllPredictions(),
       supabase.from("pre_tournament_predictions").select("user_id,points_earned"),
       supabase.from("matches").select("id,real_home_score,real_away_score"),
     ]);
@@ -69,9 +86,14 @@ function Page() {
       const m = matches.get(pr.match_id);
       if (!m || m.real_home_score === null || m.real_away_score === null) return;
       s.points += pr.points_earned ?? 0;
-      if (pr.pred_home === m.real_home_score && pr.pred_away === m.real_away_score) s.exact++;
-      const pw = Math.sign(pr.pred_home - pr.pred_away), rw = Math.sign(m.real_home_score - m.real_away_score);
-      if (pw === rw) s.good++;
+      if (pr.pred_home === m.real_home_score && pr.pred_away === m.real_away_score) {
+        s.exact++;
+        s.good++;
+      } else {
+        const pw = Math.sign(pr.pred_home - pr.pred_away);
+        const rw = Math.sign(m.real_home_score - m.real_away_score);
+        if (pw === rw) s.good++;
+      }
       if (pr.pred_home === m.real_home_score) s.goals++;
       if (pr.pred_away === m.real_away_score) s.goals++;
     });

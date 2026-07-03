@@ -7,13 +7,30 @@ export const Route = createFileRoute("/podium")({ component: Page });
 
 type Row = { id: string; pseudo: string; avatar: string; color: string; points: number };
 
+const fetchAllPredictions = async () => {
+  const pageSize = 1000;
+  let from = 0;
+  const rows: any[] = [];
+  while (true) {
+    const { data, error } = await supabase
+      .from("predictions")
+      .select("user_id,points_earned")
+      .range(from, from + pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    rows.push(...data);
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+  return rows;
+};
+
 function Page() {
   const [list, setList] = useState<Row[]>([]);
   useEffect(() => {
     const reload = async () => {
-      const [{ data: profiles }, { data: preds }, { data: pre }] = await Promise.all([
+      const [{ data: profiles }, preds, { data: pre }] = await Promise.all([
         supabase.from("profiles").select("id,pseudo,avatar,color"),
-        supabase.from("predictions").select("user_id,points_earned"),
+        fetchAllPredictions(),
         supabase.from("pre_tournament_predictions").select("user_id,points_earned"),
       ]);
       const totals = new Map<string, number>();
