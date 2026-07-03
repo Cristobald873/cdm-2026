@@ -12,7 +12,7 @@ export function getUpdateWorker() {
 
 export function onUpdateAvailable(cb: () => void) {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  return () => { listeners.delete(cb); };
 }
 
 export function dismissUpdate() {
