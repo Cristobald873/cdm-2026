@@ -13,10 +13,15 @@ export const Route = createFileRoute("/pronostics/pre-tournoi")({ component: Pag
 
 const LOCK_AT = new Date("2026-06-11T19:00:00Z").getTime();
 
+type GroupResult = { group_letter: string; qualified_1: string | null; qualified_2: string | null };
+type TSettings = { real_winner: string | null; real_top_scorer: string | null };
+
 function Page() {
   const { user } = useAuth();
   const [rows, setRows] = useState<Record<string, { qualified_1: string; qualified_2: string; tournament_winner: string; top_scorer: string }>>({});
   const [loaded, setLoaded] = useState(false);
+  const [groupResults, setGroupResults] = useState<Map<string, GroupResult>>(new Map());
+  const [tSettings, setTSettings] = useState<TSettings | null>(null);
   const locked = Date.now() >= LOCK_AT;
 
   const { players } = usePlayers();
@@ -53,6 +58,17 @@ function Page() {
       setLoaded(true);
     });
   }, [user]);
+
+  useEffect(() => {
+    supabase.from("group_results").select("group_letter,qualified_1,qualified_2").then(({ data }) => {
+      const m = new Map<string, GroupResult>();
+      (data ?? []).forEach((r: any) => m.set(r.group_letter, r));
+      setGroupResults(m);
+    });
+    supabase.from("tournament_settings").select("real_winner,real_top_scorer").eq("id", 1).maybeSingle().then(({ data }) => {
+      setTSettings((data as TSettings) ?? null);
+    });
+  }, []);
 
   const save = async (g: string, patch: Partial<typeof rows[string]>) => {
     if (!user || locked) return;
@@ -117,6 +133,40 @@ function Page() {
     return <Stats field={field} group={group} />;
   };
 
+  // Correctness badge helpers
+  const groupBadge = (group: string, value: string) => {
+    if (!value) return null;
+    const gr = groupResults.get(group);
+    if (!gr || (!gr.qualified_1 && !gr.qualified_2)) return null;
+    const real = [gr.qualified_1, gr.qualified_2].filter(Boolean) as string[];
+    const ok = real.includes(value);
+    return (
+      <span className={`ml-1 inline-flex items-center gap-1 text-xs ${ok ? "text-emerald-400" : "text-red-400"}`}>
+        {ok ? "✅ +2 pts" : "❌"}
+      </span>
+    );
+  };
+
+  const winnerBadge = (value: string) => {
+    if (!value || !tSettings?.real_winner) return null;
+    const ok = value === tSettings.real_winner;
+    return (
+      <span className={`ml-1 inline-flex items-center gap-1 text-xs ${ok ? "text-emerald-400" : "text-red-400"}`}>
+        {ok ? "✅ +15 pts" : "❌"}
+      </span>
+    );
+  };
+
+  const scorerBadge = (value: string) => {
+    if (!value || !tSettings?.real_top_scorer) return null;
+    const ok = value.trim().toLowerCase() === tSettings.real_top_scorer.trim().toLowerCase();
+    return (
+      <span className={`ml-1 inline-flex items-center gap-1 text-xs ${ok ? "text-emerald-400" : "text-red-400"}`}>
+        {ok ? "✅ +10 pts" : "❌"}
+      </span>
+    );
+  };
+
   return (
     <section>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -138,11 +188,11 @@ function Page() {
                   <h3 className="font-display text-2xl text-gold">Groupe {g}</h3>
                   <div className="mt-2 grid grid-cols-2 gap-2">
                     <div>
-                      <Sel label="1er" value={r.qualified_1} onChange={(v) => save(g, { qualified_1: v })} options={teams} disabled={locked} />
+                      <Sel label="1er" value={r.qualified_1} onChange={(v) => save(g, { qualified_1: v })} options={teams} disabled={locked} badge={groupBadge(g, r.qualified_1)} />
                       <OtherLine field="qualified_1" group={g} />
                     </div>
                     <div>
-                      <Sel label="2e" value={r.qualified_2} onChange={(v) => save(g, { qualified_2: v })} options={teams} disabled={locked} />
+                      <Sel label="2e" value={r.qualified_2} onChange={(v) => save(g, { qualified_2: v })} options={teams} disabled={locked} badge={groupBadge(g, r.qualified_2)} />
                       <OtherLine field="qualified_2" group={g} />
                     </div>
                   </div>
@@ -158,12 +208,16 @@ function Page() {
                 <Sel label="🏆 Vainqueur du tournoi (15 pts)"
                   value={rows.A?.tournament_winner ?? ""}
                   onChange={(v) => save("A", { tournament_winner: v })}
-                  options={ALL_TEAMS} disabled={locked} />
+                  options={ALL_TEAMS} disabled={locked}
+                  badge={winnerBadge(rows.A?.tournament_winner ?? "")} />
                 <OtherLine field="tournament_winner" group="A" />
               </div>
               <div>
                 <label className="block">
-                  <span className="mb-1 block text-xs uppercase tracking-wide text-muted-foreground">⚽ Meilleur buteur (10 pts)</span>
+                  <span className="mb-1 flex items-center text-xs uppercase tracking-wide text-muted-foreground">
+                    ⚽ Meilleur buteur (10 pts)
+                    {scorerBadge(rows.A?.top_scorer ?? "")}
+                  </span>
                   <input
                     className="w-full rounded-md border border-border bg-input px-3 py-2 outline-none focus:border-primary"
                     value={rows.A?.top_scorer ?? ""}
@@ -182,10 +236,13 @@ function Page() {
   );
 }
 
-function Sel({ label, value, onChange, options, disabled }: { label: string; value: string; onChange: (v: string) => void; options: string[]; disabled?: boolean }) {
+function Sel({ label, value, onChange, options, disabled, badge }: { label: string; value: string; onChange: (v: string) => void; options: string[]; disabled?: boolean; badge?: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="mb-1 flex items-center text-xs uppercase tracking-wide text-muted-foreground">
+        {label}
+        {badge}
+      </span>
       <select value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}
         className="w-full rounded-md border border-border bg-input px-2 py-2 outline-none focus:border-primary disabled:opacity-50">
         <option value="">—</option>
