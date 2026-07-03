@@ -15,6 +15,7 @@ import { Toaster } from "sonner";
 import { usePushSetup } from "@/lib/use-push";
 import { useSwUpdate } from "@/lib/use-sw-update";
 import { IosInstallBanner } from "@/components/IosInstallBanner";
+import { SwUpdateBanner } from "@/components/SwUpdateBanner";
 import { ChatBubble } from "@/components/ChatBubble";
 
 function NotFoundComponent() {
@@ -101,6 +102,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <PushBootstrap />
+        <SwUpdateBanner />
         <AppNav />
         <main className="mx-auto max-w-6xl px-4 py-6">
           <Outlet />

@@ -5,7 +5,7 @@
 //
 // Versioning: change SW_VERSION à chaque release pour forcer le navigateur
 // à détecter un nouveau service worker (byte-diff requis).
-const SW_VERSION = "v3-2026-05-23";
+const SW_VERSION = "v4-2026-07-03";
 
 self.addEventListener("install", (e) => {
   // On laisse la nouvelle version en "waiting" — la page demandera explicitement
@@ -47,5 +47,7 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") self.skipWaiting();
+  if (event.data === "SKIP_WAITING" || event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
