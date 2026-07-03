@@ -1,32 +1,19 @@
-// Détecte les nouvelles versions du service worker et propose à
-// l'utilisateur de recharger via un toast. Stratégie :
-// 1. Enregistre /sw.js (si pas déjà fait) en mode `updateViaCache: 'none'`
-//    pour que le navigateur ne mette pas en cache le script du SW.
-// 2. Vérifie les updates au démarrage, au focus de l'onglet, et toutes
-//    les 30 minutes.
-// 3. Quand un nouveau SW passe en `waiting`, on affiche un toast persistant
-//    "Mise à jour disponible". Au clic → postMessage SKIP_WAITING.
-// 4. À l'événement `controllerchange`, on recharge la page une seule fois.
+// Détecte les nouvelles versions du service worker, active automatiquement
+// le nouveau SW et affiche une bannière de mise à jour.
+// Stratégie :
+// 1. Enregistre /sw.js en mode `updateViaCache: 'none'`.
+// 2. Quand un nouveau SW est installé et qu'un contrôleur existe déjà,
+//    on envoie SKIP_WAITING pour forcer l'activation immédiate.
+// 3. À controllerchange, on recharge la page une seule fois.
+// 4. En parallèle, une bannière discrète informe l'utilisateur.
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { setUpdateAvailable } from "./sw-update-state";
 
 function isPreviewOrIframe(): boolean {
   if (typeof window === "undefined") return true;
   try { if (window.self !== window.top) return true; } catch { return true; }
   const h = window.location.hostname;
   return h.includes("id-preview--") || h.includes("lovableproject.com");
-}
-
-function promptUpdate(worker: ServiceWorker) {
-  toast("✨ Mise à jour disponible", {
-    description: "Une nouvelle version de l'app est prête.",
-    duration: Infinity,
-    id: "sw-update",
-    action: {
-      label: "Recharger",
-      onClick: () => worker.postMessage("SKIP_WAITING"),
-    },
-  });
 }
 
 export function useSwUpdate() {
@@ -52,22 +39,30 @@ export function useSwUpdate() {
           (await navigator.serviceWorker.getRegistration("/sw.js")) ||
           (await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }));
 
+        const handleInstalled = (worker: ServiceWorker) => {
+          if (navigator.serviceWorker.controller) {
+            // Nouveau SW disponible — activer immédiatement
+            setUpdateAvailable(worker);
+            worker.postMessage({ type: "SKIP_WAITING" });
+          }
+        };
+
         const watch = (worker: ServiceWorker | null) => {
           if (!worker) return;
           if (worker.state === "installed" && navigator.serviceWorker.controller) {
-            promptUpdate(worker);
+            handleInstalled(worker);
             return;
           }
           worker.addEventListener("statechange", () => {
             if (worker.state === "installed" && navigator.serviceWorker.controller) {
-              promptUpdate(worker);
+              handleInstalled(worker);
             }
           });
         };
 
         // Cas 1 : déjà en waiting au chargement
         if (reg.waiting && navigator.serviceWorker.controller) {
-          promptUpdate(reg.waiting);
+          handleInstalled(reg.waiting);
         }
         // Cas 2 : un nouveau SW est en cours d'installation
         watch(reg.installing);
